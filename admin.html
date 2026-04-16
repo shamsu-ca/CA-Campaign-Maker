@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campaign Maker — Admin</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f4f0;
+    --surface: #ffffff;
+    --border: #e2e0d8;
+    --border-dark: #c8c6bc;
+    --text: #1a1916;
+    --text-muted: #6b6960;
+    --accent: #1d4ed8;
+    --accent-light: #eff6ff;
+    --danger: #dc2626;
+    --danger-light: #fef2f2;
+    --success: #16a34a;
+    --success-light: #f0fdf4;
+    --radius: 8px;
+    --font: 'Segoe UI', system-ui, sans-serif;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── TOPBAR ── */
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-logo { font-size: 15px; font-weight: 600; }
+  .topbar-badge {
+    font-size: 11px;
+    font-weight: 600;
+    background: #1d4ed8;
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+  .topbar-right { margin-left: auto; }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    min-height: calc(100vh - 56px);
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .sidebar-title { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .template-list { flex: 1; overflow-y: auto; }
+  .template-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .template-item:hover { background: var(--bg); }
+  .template-item.active { background: var(--accent-light); border-left: 3px solid var(--accent); }
+  .template-item-name { font-size: 13px; font-weight: 500; flex: 1; }
+  .template-item-date { font-size: 11px; color: var(--text-muted); }
+  .template-empty { padding: 24px 16px; font-size: 13px; color: var(--text-muted); text-align: center; }
+
+  /* ── MAIN ── */
+  .main { padding: 24px; overflow-y: auto; }
+  .main-header { margin-bottom: 24px; }
+  .main-title { font-size: 20px; font-weight: 600; }
+  .main-sub { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* ── FORM ── */
+  .form-row { margin-bottom: 14px; }
+  .form-row-inline { display: grid; gap: 10px; margin-bottom: 14px; }
+  .form-row-2 { grid-template-columns: 1fr 1fr; }
+  .form-row-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+  label { display: block; font-size: 12px; font-weight: 500; color: var(--text-muted); margin-bottom: 5px; }
+  input[type=text], input[type=number], input[type=color], select {
+    width: 100%;
+    height: 36px;
+    border: 1px solid var(--border-dark);
+    border-radius: var(--radius);
+    padding: 0 10px;
+    font-size: 13px;
+    font-family: var(--font);
+    background: var(--surface);
+    color: var(--text);
+    transition: border-color 0.15s;
+  }
+  input[type=color] { padding: 2px 4px; cursor: pointer; }
+  input:focus, select:focus { outline: none; border-color: var(--accent); }
+
+  /* ── CANVAS PREVIEW ── */
+  .canvas-wrap {
+    background: #e8e8e8;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 200px;
+    overflow: auto;
+    margin-bottom: 16px;
+  }
+  #previewCanvas {
+    max-width: 100%;
+    border-radius: 4px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    cursor: crosshair;
+  }
+
+  /* ── TEXT FIELDS ── */
+  .field-block {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .field-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .field-block-label { font-size: 13px; font-weight: 600; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 14px;
+    height: 36px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    font-weight: 500;
+    font-family: var(--font);
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #1e40af; }
+  .btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border-dark); }
+  .btn-secondary:hover { background: var(--bg); }
+  .btn-danger { background: var(--danger-light); color: var(--danger); border-color: #fca5a5; }
+  .btn-danger:hover { background: #fee2e2; }
+  .btn-success { background: var(--success); color: #fff; }
+  .btn-success:hover { background: #15803d; }
+  .btn-sm { height: 28px; padding: 0 10px; font-size: 12px; }
+  .btn-icon { width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius); cursor: pointer; border: 1px solid var(--border-dark); background: var(--surface); font-size: 14px; }
+  .btn-icon:hover { background: var(--danger-light); border-color: #fca5a5; }
+
+  /* ── UPLOAD ZONE ── */
+  .upload-zone {
+    border: 2px dashed var(--border-dark);
+    border-radius: var(--radius);
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: var(--accent-light); }
+  .upload-zone-text { font-size: 13px; color: var(--text-muted); margin-top: 8px; }
+
+  /* ── LINK BOX ── */
+  .link-box {
+    background: var(--accent-light);
+    border: 1px solid #bfdbfe;
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .link-url { font-size: 12px; font-family: monospace; color: var(--accent); flex: 1; word-break: break-all; }
+
+  /* ── STATUS / TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--text);
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: var(--radius);
+    font-size: 13px;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.25s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.success { background: var(--success); }
+  .toast.error { background: var(--danger); }
+
+  /* ── MISC ── */
+  .row-gap { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
+  .text-muted { font-size: 12px; color: var(--text-muted); }
+  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <span class="topbar-logo">Campaign Maker</span>
+  <span class="topbar-badge">ADMIN</span>
+  <div class="topbar-right">
+    <button class="btn btn-primary" onclick="startNewTemplate()">+ New Template</button>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR: Template List -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Templates</span>
+      <span id="tplCount" class="text-muted">—</span>
+    </div>
+    <div class="template-list" id="templateList">
+      <div class="template-empty">Loading templates…</div>
+    </div>
+  </div>
+
+  <!-- MAIN PANEL -->
+  <div class="main">
+
+    <!-- EMPTY STATE -->
+    <div id="emptyState">
+      <div class="main-header">
+        <div class="main-title">Template Builder</div>
+        <div class="main-sub">Create a new template or select one from the sidebar to edit.</div>
+      </div>
+      <div class="card" style="text-align:center; padding: 40px;">
+        <div style="font-size: 32px; margin-bottom: 12px;">🖼️</div>
+        <div style="font-size: 15px; font-weight: 600; margin-bottom: 6px;">No template selected</div>
+        <div class="text-muted" style="margin-bottom: 20px;">Click "New Template" to get started.</div>
+        <button class="btn btn-primary" onclick="startNewTemplate()">+ New Template</button>
+      </div>
+    </div>
+
+    <!-- EDITOR -->
+    <div id="editorState" style="display:none;">
+      <div class="main-header" style="display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <div class="main-title" id="editorTitle">New Template</div>
+          <div class="main-sub" id="editorSub">Configure frame, image zone, and text fields.</div>
+        </div>
+        <div class="row-gap">
+          <button class="btn btn-danger btn-sm" id="deleteBtn" onclick="deleteCurrentTemplate()" style="display:none;">Delete</button>
+          <button class="btn btn-secondary btn-sm" onclick="cancelEdit()">Cancel</button>
+          <button class="btn btn-success" onclick="saveTemplate()" id="saveBtn">Save Template</button>
+        </div>
+      </div>
+
+      <!-- Template Name -->
+      <div class="card">
+        <div class="card-title">Template Info</div>
+        <div class="form-row">
+          <label>Template Name (used in filename and campaign identification)</label>
+          <input type="text" id="tplName" placeholder="e.g. Independence Day Poster">
+        </div>
+      </div>
+
+      <!-- Frame Upload -->
+      <div class="card">
+        <div class="card-title">Frame Image</div>
+        <div id="uploadZone" class="upload-zone" onclick="document.getElementById('frameFile').click()" ondragover="handleDrag(event,true)" ondragleave="handleDrag(event,false)" ondrop="handleDrop(event)">
+          <div style="font-size: 24px;">📁</div>
+          <div class="upload-zone-text">Click to upload frame PNG<br><span style="font-size:11px;">Recommended: 1080×1080px or larger · PNG</span></div>
+        </div>
+        <input type="file" id="frameFile" accept="image/png,image/jpeg" style="display:none" onchange="handleFrameUpload(event)">
+        <div id="frameStatus" class="text-muted" style="margin-top:8px; display:none;"></div>
+      </div>
+
+      <!-- Canvas Preview -->
+      <div class="card">
+        <div class="card-title" style="display:flex; align-items:center; justify-content:space-between;">
+          <span>Preview Canvas</span>
+          <span class="text-muted" style="font-size:11px; text-transform:none; letter-spacing:0;">Click canvas to set image zone corner · Drag to resize</span>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="previewCanvas" width="600" height="400"></canvas>
+        </div>
+
+        <!-- Image Zone -->
+        <div style="margin-bottom: 16px;">
+          <div style="font-size: 13px; font-weight: 600; margin-bottom: 10px;">Image Placeholder Zone</div>
+          <div class="form-row-inline form-row-4">
+            <div><label>X (px)</label><input type="number" id="imgX" value="50" min="0" onchange="renderPreview()"></div>
+            <div><label>Y (px)</label><input type="number" id="imgY" value="50" min="0" onchange="renderPreview()"></div>
+            <div><label>Width (px)</label><input type="number" id="imgW" value="400" min="10" onchange="renderPreview()"></div>
+            <div><label>Height (px)</label><input type="number" id="imgH" value="400" min="10" onchange="renderPreview()"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Text Fields -->
+      <div class="card">
+        <div class="card-title" style="display:flex; align-items:center; justify-content:space-between;">
+          <span>Text Fields</span>
+          <button class="btn btn-secondary btn-sm" onclick="addTextField()">+ Add Field</button>
+        </div>
+        <div id="textFields"></div>
+        <div id="noFieldsMsg" class="text-muted" style="text-align:center; padding: 16px 0;">No text fields yet. Click "Add Field" to add one.</div>
+      </div>
+
+      <!-- Share Link -->
+      <div class="card" id="shareLinkCard" style="display:none;">
+        <div class="card-title">Share Link</div>
+        <div class="link-box">
+          <span class="link-url" id="shareLink">—</span>
+          <button class="btn btn-secondary btn-sm" onclick="copyLink()">Copy</button>
+        </div>
+        <div class="text-muted" style="margin-top: 8px;">Share this link with users. It opens directly with this template loaded.</div>
+      </div>
+
+    </div><!-- /editorState -->
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// CONFIG — paste your Apps Script Web App URL here
+// ============================================================
+const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AWDtjMVrnqBVHqMLoycGbVCdXE-EvJ_YUY552NbX6arg--vePRfKDZphgeRs0ly3CANA-SMm7XGi92lNZvDpLyHlmvET5wtL1l1mjDAsJ2xLBIxjD-MSiwjbyPN-FOH8AP_Dwt1zsrotC-JtSeHQNLRrXCDEtJXx2ppnyPvjJB0JIw9NkP_TYqM4ObcX02ubJJawhVSPHRv4W4k1mI0ahJ7-d9cBTdSxx_WgvU0aEtzaMXm2PnZNeT1Oolsi_gS7yEXA6x1q3mqTeyGuSGCbeRRXZ8gal7U9lw&lib=MqnWsiAgObABnsdkZB3X5svRbA25Fyx5W';
+const USER_PAGE_URL = 'YOUR_USER_PAGE_URL_HERE'; // URL where user.html is hosted
+
+// ============================================================
+// STATE
+// ============================================================
+let templates = [];
+let currentTemplate = null; // null = new
+let frameImage = null;      // HTMLImageElement of uploaded frame
+let frameBase64 = null;
+let frameMime = null;
+let frameFilename = null;
+let textFields = [];
+let frameURL = null;        // URL stored in Drive after upload
+let isDragging = false;
+let dragStart = null;
+
+// ============================================================
+// INIT
+// ============================================================
+window.onload = () => {
+  loadTemplates();
+};
+
+// ============================================================
+// API CALLS
+// ============================================================
+async function api(params) {
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      body: JSON.stringify(params)
+    });
+    return await res.json();
+  } catch (e) {
+    return { error: e.message };
+  }
+}
+
+async function apiGet(params) {
+  const qs = new URLSearchParams(params).toString();
+  try {
+    const res = await fetch(`${API_URL}?${qs}`);
+    return await res.json();
+  } catch (e) {
+    return { error: e.message };
+  }
+}
+
+// ============================================================
+// TEMPLATE LIST
+// ============================================================
+async function loadTemplates() {
+  const data = await apiGet({ action: 'getTemplates' });
+  if (data.error) { toast('Failed to load templates', 'error'); return; }
+  templates = data.templates || [];
+  renderSidebar();
+}
+
+function renderSidebar() {
+  const list = document.getElementById('templateList');
+  document.getElementById('tplCount').textContent = templates.length + ' template' + (templates.length !== 1 ? 's' : '');
+
+  if (!templates.length) {
+    list.innerHTML = '<div class="template-empty">No templates yet. Create your first one!</div>';
+    return;
+  }
+
+  list.innerHTML = templates.map(t => `
+    <div class="template-item ${currentTemplate && currentTemplate.id === t.id ? 'active' : ''}" onclick="selectTemplate('${t.id}')">
+      <div style="flex:1; min-width:0;">
+        <div class="template-item-name">${esc(t.name)}</div>
+        <div class="template-item-date">${t.createdAt ? new Date(t.createdAt).toLocaleDateString() : ''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// EDITOR: NEW / EDIT / CANCEL
+// ============================================================
+function startNewTemplate() {
+  currentTemplate = null;
+  frameImage = null;
+  frameBase64 = null;
+  frameURL = null;
+  textFields = [];
+
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('editorState').style.display = 'block';
+  document.getElementById('editorTitle').textContent = 'New Template';
+  document.getElementById('editorSub').textContent = 'Configure frame, image zone, and text fields.';
+  document.getElementById('deleteBtn').style.display = 'none';
+  document.getElementById('shareLinkCard').style.display = 'none';
+  document.getElementById('tplName').value = '';
+  document.getElementById('frameStatus').style.display = 'none';
+  document.getElementById('imgX').value = 50;
+  document.getElementById('imgY').value = 50;
+  document.getElementById('imgW').value = 400;
+  document.getElementById('imgH').value = 400;
+
+  renderTextFields();
+  clearCanvas();
+  renderSidebar();
+}
+
+async function selectTemplate(id) {
+  const data = await apiGet({ action: 'getTemplate', id });
+  if (data.error) { toast('Failed to load template', 'error'); return; }
+  const t = data.template;
+  currentTemplate = t;
+
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('editorState').style.display = 'block';
+  document.getElementById('editorTitle').textContent = t.name;
+  document.getElementById('editorSub').textContent = 'ID: ' + t.id;
+  document.getElementById('deleteBtn').style.display = '';
+  document.getElementById('tplName').value = t.name;
+  document.getElementById('imgX').value = t.imageX;
+  document.getElementById('imgY').value = t.imageY;
+  document.getElementById('imgW').value = t.imageW;
+  document.getElementById('imgH').value = t.imageH;
+
+  textFields = t.textConfig || [];
+  frameURL = t.imageURL;
+  frameBase64 = null;
+
+  // Load frame image for preview
+  if (t.imageURL) {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => { frameImage = img; renderPreview(); };
+    img.onerror = () => { frameImage = null; renderPreview(); };
+    img.src = t.imageURL;
+    document.getElementById('frameStatus').style.display = 'block';
+    document.getElementById('frameStatus').textContent = 'Frame loaded from Drive.';
+  }
+
+  renderTextFields();
+  setShareLink(t.id);
+  renderSidebar();
+}
+
+function cancelEdit() {
+  currentTemplate = null;
+  document.getElementById('editorState').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'block';
+  renderSidebar();
+}
+
+// ============================================================
+// FRAME UPLOAD
+// ============================================================
+function handleDrag(e, active) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.toggle('drag', active);
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  handleDrag(e, false);
+  const file = e.dataTransfer.files[0];
+  if (file) processFrameFile(file);
+}
+
+function handleFrameUpload(e) {
+  const file = e.target.files[0];
+  if (file) processFrameFile(file);
+}
+
+function processFrameFile(file) {
+  if (!file.type.startsWith('image/')) { toast('Please upload an image file', 'error'); return; }
+  frameFilename = file.name;
+  frameMime = file.type;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+    frameBase64 = dataUrl.split(',')[1];
+    const img = new Image();
+    img.onload = () => {
+      frameImage = img;
+      // Set default image zone to center 60% of frame
+      const cx = Math.round(img.width * 0.2);
+      const cy = Math.round(img.height * 0.2);
+      const cw = Math.round(img.width * 0.6);
+      const ch = Math.round(img.height * 0.6);
+      document.getElementById('imgX').value = cx;
+      document.getElementById('imgY').value = cy;
+      document.getElementById('imgW').value = cw;
+      document.getElementById('imgH').value = ch;
+      renderPreview();
+    };
+    img.src = dataUrl;
+    document.getElementById('frameStatus').style.display = 'block';
+    document.getElementById('frameStatus').textContent = `Loaded: ${file.name} — will upload on save.`;
+    document.getElementById('uploadZone').innerHTML = `<div style="font-size:24px;">✅</div><div class="upload-zone-text">${file.name}</div>`;
+  };
+  reader.readAsDataURL(file);
+}
+
+// ============================================================
+// CANVAS PREVIEW + DRAG IMAGE ZONE
+// ============================================================
+const CANVAS_W = 600;
+
+function getScale() {
+  if (!frameImage) return 1;
+  return CANVAS_W / frameImage.width;
+}
+
+function renderPreview() {
+  const canvas = document.getElementById('previewCanvas');
+  const ctx = canvas.getContext('2d');
+
+  if (!frameImage) {
+    canvas.width = CANVAS_W;
+    canvas.height = 400;
+    ctx.fillStyle = '#e0e0e0';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#999';
+    ctx.font = '16px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('Upload a frame image to preview', canvas.width / 2, 200);
+    return;
+  }
+
+  const scale = CANVAS_W / frameImage.width;
+  canvas.width  = CANVAS_W;
+  canvas.height = Math.round(frameImage.height * scale);
+
+  // Draw frame
+  ctx.drawImage(frameImage, 0, 0, canvas.width, canvas.height);
+
+  // Draw image zone overlay
+  const x = parseInt(document.getElementById('imgX').value) * scale;
+  const y = parseInt(document.getElementById('imgY').value) * scale;
+  const w = parseInt(document.getElementById('imgW').value) * scale;
+  const h = parseInt(document.getElementById('imgH').value) * scale;
+
+  ctx.save();
+  ctx.fillStyle = 'rgba(29, 78, 216, 0.15)';
+  ctx.strokeStyle = '#1d4ed8';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 3]);
+  ctx.fillRect(x, y, w, h);
+  ctx.strokeRect(x, y, w, h);
+  ctx.restore();
+
+  // Label
+  ctx.save();
+  ctx.fillStyle = '#1d4ed8';
+  ctx.font = 'bold 12px sans-serif';
+  ctx.fillText('📷 Image Zone', x + 6, y + 18);
+  ctx.restore();
+
+  // Draw text field markers
+  textFields.forEach((f, i) => {
+    if (!f.label) return;
+    const tx = (f.x || 0) * scale;
+    const ty = (f.y || 0) * scale;
+    const tmw = (f.maxWidth || 200) * scale;
+
+    ctx.save();
+    ctx.strokeStyle = '#f59e0b';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 2]);
+    const fsize = Math.max(10, Math.min(30, (f.size || 20) * scale));
+    ctx.strokeRect(tx, ty - fsize, tmw, fsize + 4);
+    ctx.fillStyle = '#f59e0b';
+    ctx.font = `bold 11px sans-serif`;
+    ctx.fillText(f.label, tx + 4, ty - fsize + 12);
+    ctx.restore();
+  });
+}
+
+function clearCanvas() {
+  const canvas = document.getElementById('previewCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = CANVAS_W;
+  canvas.height = 400;
+  ctx.fillStyle = '#e0e0e0';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#999';
+  ctx.font = '16px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('Upload a frame image to preview', canvas.width / 2, 200);
+}
+
+// Canvas drag to reposition image zone
+const canvas = document.getElementById('previewCanvas');
+let dragging = false, dragField = null, startMouse = null, startVals = null;
+
+canvas.addEventListener('mousedown', (e) => {
+  if (!frameImage) return;
+  const rect = canvas.getBoundingClientRect();
+  const scale = CANVAS_W / frameImage.width;
+  const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const my = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+  const x = parseInt(document.getElementById('imgX').value) * scale;
+  const y = parseInt(document.getElementById('imgY').value) * scale;
+  const w = parseInt(document.getElementById('imgW').value) * scale;
+  const h = parseInt(document.getElementById('imgH').value) * scale;
+
+  if (mx >= x && mx <= x + w && my >= y && my <= y + h) {
+    dragging = true;
+    startMouse = { x: mx, y: my };
+    startVals = {
+      x: parseInt(document.getElementById('imgX').value),
+      y: parseInt(document.getElementById('imgY').value)
+    };
+    canvas.style.cursor = 'move';
+  }
+});
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!dragging || !frameImage) return;
+  const rect = canvas.getBoundingClientRect();
+  const scale = CANVAS_W / frameImage.width;
+  const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
+  const my = (e.clientY - rect.top) * (canvas.height / rect.height);
+  const dx = (mx - startMouse.x) / scale;
+  const dy = (my - startMouse.y) / scale;
+  document.getElementById('imgX').value = Math.round(Math.max(0, startVals.x + dx));
+  document.getElementById('imgY').value = Math.round(Math.max(0, startVals.y + dy));
+  renderPreview();
+});
+
+canvas.addEventListener('mouseup', () => { dragging = false; canvas.style.cursor = 'crosshair'; });
+canvas.addEventListener('mouseleave', () => { dragging = false; });
+
+// ============================================================
+// TEXT FIELDS
+// ============================================================
+function addTextField() {
+  textFields.push({
+    label: '',
+    x: 100,
+    y: 100,
+    maxWidth: 400,
+    font: 'Arial',
+    size: 32,
+    color: '#000000',
+    align: 'center'
+  });
+  renderTextFields();
+}
+
+function removeTextField(i) {
+  textFields.splice(i, 1);
+  renderTextFields();
+  renderPreview();
+}
+
+function updateTextField(i, key, value) {
+  if (['x','y','maxWidth','size'].includes(key)) value = parseInt(value) || 0;
+  textFields[i][key] = value;
+  renderPreview();
+}
+
+function renderTextFields() {
+  const container = document.getElementById('textFields');
+  const msg = document.getElementById('noFieldsMsg');
+
+  if (!textFields.length) {
+    container.innerHTML = '';
+    msg.style.display = '';
+    return;
+  }
+  msg.style.display = 'none';
+
+  const fonts = ['Arial', 'Georgia', 'Times New Roman', 'Verdana', 'Trebuchet MS', 'Impact', 'Courier New', 'Tahoma'];
+  const aligns = ['left', 'center', 'right'];
+
+  container.innerHTML = textFields.map((f, i) => `
+    <div class="field-block">
+      <div class="field-block-header">
+        <span class="field-block-label">Field ${i + 1}: ${f.label || '(unlabeled)'}</span>
+        <button class="btn-icon" onclick="removeTextField(${i})" title="Remove field">✕</button>
+      </div>
+      <div class="form-row-inline form-row-2">
+        <div><label>Field Label</label><input type="text" value="${esc(f.label)}" placeholder="e.g. Name" onchange="updateTextField(${i},'label',this.value); document.querySelector('#textFields .field-block:nth-child(${i+1}) .field-block-label').textContent='Field ${i+1}: '+(this.value||'(unlabeled)')"></div>
+        <div><label>Font Family</label>
+          <select onchange="updateTextField(${i},'font',this.value)">
+            ${fonts.map(fn => `<option value="${fn}" ${f.font===fn?'selected':''}>${fn}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="form-row-inline form-row-4">
+        <div><label>X (px)</label><input type="number" value="${f.x}" min="0" onchange="updateTextField(${i},'x',this.value)"></div>
+        <div><label>Y (px)</label><input type="number" value="${f.y}" min="0" onchange="updateTextField(${i},'y',this.value)"></div>
+        <div><label>Max Width</label><input type="number" value="${f.maxWidth}" min="50" onchange="updateTextField(${i},'maxWidth',this.value)"></div>
+        <div><label>Font Size</label><input type="number" value="${f.size}" min="8" max="200" onchange="updateTextField(${i},'size',this.value)"></div>
+      </div>
+      <div class="form-row-inline form-row-2">
+        <div><label>Color</label><input type="color" value="${f.color}" oninput="updateTextField(${i},'color',this.value)"></div>
+        <div><label>Alignment</label>
+          <select onchange="updateTextField(${i},'align',this.value)">
+            ${aligns.map(a => `<option value="${a}" ${f.align===a?'selected':''}>${a.charAt(0).toUpperCase()+a.slice(1)}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  renderPreview();
+}
+
+// ============================================================
+// SAVE
+// ============================================================
+async function saveTemplate() {
+  const name = document.getElementById('tplName').value.trim();
+  if (!name) { toast('Please enter a template name', 'error'); return; }
+  if (!frameImage && !frameURL) { toast('Please upload a frame image', 'error'); return; }
+
+  const btn = document.getElementById('saveBtn');
+  btn.innerHTML = '<span class="spinner"></span> Saving…';
+  btn.disabled = true;
+
+  try {
+    // Upload frame image to Drive if new file selected
+    let imageURL = frameURL;
+    if (frameBase64) {
+      const upRes = await api({
+        action: 'uploadImage',
+        base64: frameBase64,
+        mimeType: frameMime,
+        filename: frameFilename || 'frame.png'
+      });
+      if (upRes.error) { toast('Image upload failed: ' + upRes.error, 'error'); return; }
+      imageURL = upRes.url;
+      frameURL = imageURL;
+      frameBase64 = null;
+    }
+
+    const payload = {
+      action: 'saveTemplate',
+      id: currentTemplate ? currentTemplate.id : null,
+      name,
+      imageURL,
+      imageX: parseInt(document.getElementById('imgX').value),
+      imageY: parseInt(document.getElementById('imgY').value),
+      imageW: parseInt(document.getElementById('imgW').value),
+      imageH: parseInt(document.getElementById('imgH').value),
+      textConfig: textFields
+    };
+
+    const res = await api(payload);
+    if (res.error) { toast('Save failed: ' + res.error, 'error'); return; }
+
+    if (!currentTemplate) {
+      currentTemplate = { id: res.id, name };
+    }
+    currentTemplate.name = name;
+
+    setShareLink(res.id);
+    document.getElementById('shareLinkCard').style.display = 'block';
+    document.getElementById('deleteBtn').style.display = '';
+    document.getElementById('editorTitle').textContent = name;
+    document.getElementById('editorSub').textContent = 'ID: ' + res.id;
+
+    toast('Template saved!', 'success');
+    await loadTemplates();
+    renderSidebar();
+
+  } finally {
+    btn.innerHTML = 'Save Template';
+    btn.disabled = false;
+  }
+}
+
+// ============================================================
+// DELETE
+// ============================================================
+async function deleteCurrentTemplate() {
+  if (!currentTemplate) return;
+  if (!confirm(`Delete template "${currentTemplate.name}"? This cannot be undone.`)) return;
+
+  const res = await api({ action: 'deleteTemplate', id: currentTemplate.id });
+  if (res.error) { toast('Delete failed: ' + res.error, 'error'); return; }
+
+  toast('Template deleted');
+  currentTemplate = null;
+  await loadTemplates();
+  cancelEdit();
+}
+
+// ============================================================
+// SHARE LINK
+// ============================================================
+function setShareLink(id) {
+  const link = `${USER_PAGE_URL}?template=${id}`;
+  document.getElementById('shareLink').textContent = link;
+}
+
+function copyLink() {
+  const link = document.getElementById('shareLink').textContent;
+  navigator.clipboard.writeText(link).then(() => toast('Link copied!', 'success'));
+}
+
+// ============================================================
+// UTILS
+// ============================================================
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+let toastTimer;
+function toast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (type ? ' ' + type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = 'toast'; }, 3000);
+}
+</script>
+</body>
+</html>
