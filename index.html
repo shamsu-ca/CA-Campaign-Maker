@@ -3,79 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Campaign Maker</title>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #f5f4f0;
-    --surface: #ffffff;
-    --border: #e2e0d8;
-    --text: #1a1916;
-    --text-muted: #6b6960;
-    --accent: #1d4ed8;
-    --radius: 8px;
-    --font: 'Segoe UI', system-ui, sans-serif;
-  }
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 40px;
-    text-align: center;
-    max-width: 400px;
-    width: 90%;
-  }
-  .logo { font-size: 32px; margin-bottom: 12px; }
-  h1 { font-size: 22px; font-weight: 600; margin-bottom: 6px; }
-  .sub { font-size: 14px; color: var(--text-muted); margin-bottom: 32px; }
-  .btn {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    border-radius: var(--radius);
-    font-size: 14px;
-    font-weight: 600;
-    font-family: var(--font);
-    cursor: pointer;
-    border: 1px solid transparent;
-    text-decoration: none;
-    margin-bottom: 10px;
-    transition: all 0.15s;
-  }
-  .btn-primary { background: #1d4ed8; color: #fff; }
-  .btn-primary:hover { background: #1e40af; }
-  .btn-secondary { background: var(--surface); color: var(--text); border-color: #c8c6bc; }
-  .btn-secondary:hover { background: var(--bg); }
-  .divider { font-size: 11px; color: var(--text-muted); margin: 8px 0 16px; }
-</style>
+<title>Twibbon Frame Maker</title>
 <script>
-  // Auto-redirect if ?template=ID is in the URL
-  (function() {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('template')) {
-      window.location.replace('./user.html' + window.location.search);
-    }
-    if (params.get('admin') === '1') {
-      window.location.replace('./admin.html');
-    }
-  })();
+(function() {
+  const p = new URLSearchParams(location.search);
+  if (p.get('campaign')) { location.replace('./user.html' + location.search); return; }
+  if (p.get('admin') === '1') { location.replace('./admin.html'); return; }
+})();
 </script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f4f3ef;min-height:100vh;display:flex;align-items:center;justify-content:center}
+.card{background:#fff;border:1px solid #e0ddd6;border-radius:14px;padding:44px 36px;text-align:center;max-width:380px;width:90%}
+.logo{font-size:40px;margin-bottom:14px}
+h1{font-size:24px;font-weight:700;margin-bottom:6px;color:#18170f}
+.sub{font-size:14px;color:#6b695f;margin-bottom:32px;line-height:1.6}
+.btn{display:block;width:100%;padding:13px;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;border:none;text-decoration:none;margin-bottom:10px;transition:all .15s}
+.btn-primary{background:#2563eb;color:#fff}
+.btn-primary:hover{background:#1d4ed8}
+.btn-secondary{background:#fff;color:#18170f;border:1px solid #c9c6be}
+.btn-secondary:hover{background:#f4f3ef}
+.divider{font-size:12px;color:#6b695f;margin:4px 0 12px}
+</style>
 </head>
 <body>
 <div class="card">
   <div class="logo">🎨</div>
-  <h1>Campaign Maker</h1>
-  <p class="sub">Create and share campaign posters in seconds.</p>
-  <a class="btn btn-primary" href="./user.html">Open as User</a>
+  <h1>Twibbon</h1>
+  <p class="sub">Add a campaign frame to your photo and show your support.</p>
+  <a class="btn btn-primary" href="./user.html">Open User Tool</a>
   <div class="divider">— or —</div>
   <a class="btn btn-secondary" href="./admin.html">Admin Panel</a>
 </div>
