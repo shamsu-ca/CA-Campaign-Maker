@@ -4,250 +4,269 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Twibbon Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@100;200;300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#f4f3ef;--surface:#fff;--border:#e0ddd6;--border2:#c9c6be;
-  --text:#18170f;--muted:#6b695f;--accent:#2563eb;--accent-bg:#eff6ff;
-  --green:#16a34a;--green-bg:#f0fdf4;--red:#dc2626;--red-bg:#fef2f2;
-  --radius:8px;--font:'Segoe UI',system-ui,sans-serif
+  --bg:#f2f1ed;--surface:#fff;--border:#e2dfd7;--border2:#cac7bf;
+  --text:#17160f;--muted:#69665c;
+  --blue:#2563eb;--blue-bg:#eff6ff;--blue-border:#bfdbfe;
+  --green:#16a34a;--green-bg:#f0fdf4;--green-border:#bbf7d0;
+  --red:#dc2626;--red-bg:#fef2f2;--red-border:#fecaca;
+  --amber:#d97706;--amber-bg:#fffbeb;
+  --r:8px;--r-lg:12px;
+  --font:'Inter',system-ui,sans-serif
 }
-body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
 
-/* topbar */
-.topbar{background:var(--surface);border-bottom:1px solid var(--border);height:54px;padding:0 20px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:200}
-.topbar-logo{font-size:15px;font-weight:700;letter-spacing:-.3px}
-.topbar-badge{font-size:10px;font-weight:700;background:var(--accent);color:#fff;padding:2px 8px;border-radius:20px;letter-spacing:.04em}
-.topbar-tabs{display:flex;gap:2px;margin-left:24px}
-.tab{padding:6px 14px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);transition:all .15s}
-.tab.active{background:var(--accent-bg);color:var(--accent)}
-.topbar-right{margin-left:auto;display:flex;gap:8px}
+/* ── TOPBAR ── */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);height:52px;padding:0 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:300}
+.logo{font-size:16px;font-weight:700;letter-spacing:-.4px}
+.admin-chip{font-size:10px;font-weight:700;background:var(--blue);color:#fff;padding:2px 8px;border-radius:20px;letter-spacing:.05em}
+.topbar-tabs{display:flex;gap:2px;margin-left:16px}
+.tab-btn{padding:5px 12px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);font-family:var(--font);transition:all .15s}
+.tab-btn.on{background:var(--blue-bg);color:var(--blue)}
+.ml-auto{margin-left:auto}
 
-/* layout */
-.layout{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 54px)}
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 52px)}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
 
-/* sidebar */
+/* ── SIDEBAR ── */
 .sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column}
-.sidebar-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.sidebar-title{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.campaign-list{flex:1;overflow-y:auto}
-.camp-item{padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+@media(max-width:900px){.sidebar{display:none}.sidebar.open{display:flex;position:fixed;inset:52px 0 0 0;z-index:200;overflow-y:auto}}
+.sb-head{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sb-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.camp-list{flex:1;overflow-y:auto}
+.camp-item{padding:11px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;display:flex;flex-direction:column;gap:3px}
 .camp-item:hover{background:var(--bg)}
-.camp-item.active{background:var(--accent-bg);border-left:3px solid var(--accent)}
-.camp-item-name{font-size:13px;font-weight:600;margin-bottom:2px}
-.camp-item-meta{font-size:11px;color:var(--muted)}
-.camp-empty{padding:24px 16px;text-align:center;font-size:13px;color:var(--muted)}
+.camp-item.on{background:var(--blue-bg);border-left:3px solid var(--blue)}
+.camp-name{font-size:13px;font-weight:600}
+.camp-meta{font-size:11px;color:var(--muted)}
+.camp-empty{padding:20px 14px;text-align:center;font-size:13px;color:var(--muted)}
 
-/* main */
-.main{padding:22px;overflow-y:auto}
-.main-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;gap:12px}
-.main-title{font-size:19px;font-weight:700}
-.main-sub{font-size:13px;color:var(--muted);margin-top:3px}
-.actions{display:flex;gap:8px;flex-shrink:0}
+/* ── MAIN ── */
+.main{padding:18px;overflow-y:auto;min-height:0}
+@media(max-width:600px){.main{padding:12px}}
 
-/* card */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:14px}
-.card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+/* ── CARD ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;margin-bottom:14px}
+.card-hd{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:13px;padding-bottom:10px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 
-/* form */
-.fg{margin-bottom:13px}
-.fg label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
-input[type=text],input[type=number],select,textarea{width:100%;height:36px;border:1px solid var(--border2);border-radius:var(--radius);padding:0 10px;font-size:13px;font-family:var(--font);background:var(--surface);color:var(--text);transition:border-color .15s}
-textarea{height:auto;padding:8px 10px;resize:vertical}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
-input[type=color]{padding:2px 4px;cursor:pointer;height:36px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.grid4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+/* ── FORM ── */
+.fg{margin-bottom:11px}
+.fg label{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+input[type=text],input[type=number],select,textarea{width:100%;height:38px;border:1px solid var(--border2);border-radius:var(--r);padding:0 10px;font-size:13px;font-family:var(--font);background:var(--surface);color:var(--text);transition:border-color .15s;-webkit-appearance:none}
+textarea{height:auto;padding:8px 10px;resize:vertical;line-height:1.5}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+input[type=color]{padding:2px 4px;cursor:pointer;height:38px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}}
 
-/* upload zone */
-.drop-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:22px;text-align:center;cursor:pointer;transition:all .15s}
-.drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:var(--accent-bg)}
+/* ── DROP ZONE ── */
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--r);padding:20px 14px;text-align:center;cursor:pointer;transition:all .15s}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--blue);background:var(--blue-bg)}
 .drop-zone.done{border-color:var(--green);background:var(--green-bg)}
-.drop-icon{font-size:24px;margin-bottom:6px}
-.drop-text{font-size:13px;color:var(--muted)}
 
-/* canvas preview */
-.canvas-wrap{background:#d1d5db;border-radius:var(--radius);overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:220px;margin-bottom:12px;position:relative}
-#adminCanvas{max-width:100%;display:block;cursor:default}
+/* ── CANVAS ── */
+.canvas-wrap{background:#cbd5e1;border-radius:var(--r);overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:200px;margin-bottom:12px;position:relative}
+#adminCanvas{max-width:100%;display:block;cursor:crosshair}
 
-/* text field blocks */
-.tf-block{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:13px;margin-bottom:10px}
-.tf-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px}
-.tf-label{font-size:13px;font-weight:600}
-.tf-type-badge{font-size:10px;padding:2px 7px;border-radius:20px;background:var(--accent-bg);color:var(--accent);font-weight:600}
+/* ── TEXT FIELD BLOCK ── */
+.tf-block{background:var(--bg);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:10px}
+.tf-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.tf-name{font-size:13px;font-weight:600}
+.chip{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.chip-text{background:var(--blue-bg);color:var(--blue)}
+.chip-drop{background:var(--amber-bg);color:var(--amber)}
 
-/* dropdown options */
-.opts-wrap{margin-top:8px}
-.opt-row{display:flex;gap:6px;align-items:center;margin-bottom:5px}
+/* dropdown opts */
+.opt-row{display:flex;gap:6px;margin-bottom:6px}
 .opt-row input{flex:1}
 
-/* buttons */
-.btn{display:inline-flex;align-items:center;gap:5px;padding:0 14px;height:34px;border-radius:var(--radius);font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;border:1px solid transparent;transition:all .15s;white-space:nowrap}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:#1d4ed8}
-.btn-secondary{background:var(--surface);color:var(--text);border-color:var(--border2)}
-.btn-secondary:hover{background:var(--bg)}
-.btn-danger{background:var(--red-bg);color:var(--red);border-color:#fca5a5}
-.btn-danger:hover{background:#fee2e2}
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:0 14px;height:36px;border-radius:var(--r);font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;border:none;transition:all .15s;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.btn-blue{background:var(--blue);color:#fff}
+.btn-blue:hover{background:#1d4ed8}
 .btn-green{background:var(--green);color:#fff}
 .btn-green:hover{background:#15803d}
-.btn-sm{height:28px;padding:0 10px;font-size:12px}
-.icon-btn{width:28px;height:28px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s}
-.icon-btn:hover{background:var(--red-bg);border-color:#fca5a5}
+.btn-ghost{background:var(--surface);color:var(--text);border:1px solid var(--border2)}
+.btn-ghost:hover{background:var(--bg)}
+.btn-red{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border)}
+.btn-red:hover{background:#fee2e2}
+.btn-sm{height:30px;padding:0 10px;font-size:12px}
+.icon-btn{width:30px;height:30px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.icon-btn:hover{background:var(--red-bg);border-color:var(--red-border)}
 
-/* link box */
-.link-box{background:var(--accent-bg);border:1px solid #bfdbfe;border-radius:var(--radius);padding:10px 13px;display:flex;align-items:center;gap:10px;margin-top:10px}
-.link-url{font-size:12px;font-family:monospace;color:var(--accent);flex:1;word-break:break-all}
+/* ── LINK BOX ── */
+.link-box{background:var(--blue-bg);border:1px solid var(--blue-border);border-radius:var(--r);padding:10px 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;gap:8px}
+.link-url{font-size:12px;font-family:monospace;color:var(--blue);flex:1;word-break:break-all;min-width:0}
 
-/* logs table */
-.log-table{width:100%;border-collapse:collapse;font-size:13px}
+/* ── LOG TABLE ── */
+.log-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.log-table{width:100%;border-collapse:collapse;font-size:13px;min-width:500px}
 .log-table th{text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border)}
 .log-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
 .log-table tr:last-child td{border-bottom:none}
 .log-table tr:hover td{background:var(--bg)}
-.log-photo{width:36px;height:36px;border-radius:4px;object-fit:cover;border:1px solid var(--border)}
+.log-photo{width:34px;height:34px;border-radius:4px;object-fit:cover;border:1px solid var(--border);display:block}
 
-/* toast */
-.toast{position:fixed;bottom:22px;right:22px;background:var(--text);color:#fff;padding:9px 15px;border-radius:var(--radius);font-size:13px;z-index:9999;opacity:0;transform:translateY(6px);transition:all .22s;pointer-events:none}
+/* ── MOBILE TOPBAR EXTRAS ── */
+.menu-btn{display:none;width:36px;height:36px;border-radius:var(--r);border:1px solid var(--border2);background:var(--surface);cursor:pointer;align-items:center;justify-content:center;font-size:18px;margin-left:4px}
+@media(max-width:900px){.menu-btn{display:flex}}
+
+/* ── EMPTY ── */
+.empty-state{text-align:center;padding:50px 16px}
+.empty-icon{font-size:40px;margin-bottom:12px}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;right:20px;left:20px;max-width:340px;margin:0 auto;background:var(--text);color:#fff;padding:10px 16px;border-radius:var(--r);font-size:13px;z-index:9999;opacity:0;transform:translateY(6px);transition:all .22s;pointer-events:none;text-align:center}
 .toast.show{opacity:1;transform:translateY(0)}
 .toast.ok{background:var(--green)}
 .toast.err{background:var(--red)}
 
-/* spinner */
+/* ── SPINNER ── */
 .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:sp .65s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 
-/* empty / states */
-.empty-state{text-align:center;padding:50px 20px}
-.empty-icon{font-size:36px;margin-bottom:12px}
-.empty-title{font-size:16px;font-weight:600;margin-bottom:6px}
-.empty-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+/* ── FONT PREVIEW ── */
+.font-preview{font-size:18px;padding:6px 0;color:var(--text);min-height:32px;margin-top:4px}
 </style>
 </head>
 <body>
 
+<!-- TOPBAR -->
 <div class="topbar">
-  <span class="topbar-logo">Twibbon</span>
-  <span class="topbar-badge">ADMIN</span>
+  <span class="logo">Twibbon</span>
+  <span class="admin-chip">ADMIN</span>
   <div class="topbar-tabs">
-    <button class="tab active" onclick="switchTab('campaigns')">Campaigns</button>
-    <button class="tab" onclick="switchTab('logs')">Submission Logs</button>
+    <button class="tab-btn on" onclick="switchTab('campaigns')">Campaigns</button>
+    <button class="tab-btn" onclick="switchTab('logs')">Logs</button>
   </div>
-  <div class="topbar-right">
-    <button class="btn btn-primary" onclick="newCampaign()">+ New Campaign</button>
+  <div class="ml-auto" style="display:flex;gap:8px;align-items:center">
+    <button class="btn btn-blue btn-sm" onclick="newCampaign()">+ New</button>
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
   </div>
 </div>
 
-<div class="layout" id="tabCampaigns">
+<!-- CAMPAIGNS TAB -->
+<div id="tabCampaigns" class="layout">
+
   <!-- SIDEBAR -->
-  <div class="sidebar">
-    <div class="sidebar-head">
-      <span class="sidebar-title">Campaigns</span>
+  <div class="sidebar" id="sidebar">
+    <div class="sb-head">
+      <span class="sb-title">Campaigns</span>
       <span id="campCount" style="font-size:12px;color:var(--muted)">—</span>
     </div>
-    <div class="campaign-list" id="campList">
-      <div class="camp-empty">Loading…</div>
-    </div>
+    <div class="camp-list" id="campList"><div class="camp-empty">Loading…</div></div>
   </div>
 
   <!-- MAIN -->
   <div class="main">
-    <!-- EMPTY STATE -->
+
+    <!-- EMPTY -->
     <div id="emptyState" class="empty-state">
       <div class="empty-icon">🎨</div>
-      <div class="empty-title">No campaign selected</div>
-      <div class="empty-sub">Create a new campaign or pick one from the sidebar.</div>
-      <button class="btn btn-primary" onclick="newCampaign()">+ New Campaign</button>
+      <div style="font-size:16px;font-weight:700;margin-bottom:6px">No campaign selected</div>
+      <div style="color:var(--muted);margin-bottom:20px;font-size:13px">Create or pick a campaign from the sidebar.</div>
+      <button class="btn btn-blue" onclick="newCampaign()">+ New Campaign</button>
     </div>
 
     <!-- EDITOR -->
     <div id="editorState" style="display:none">
-      <div class="main-head">
+
+      <!-- Header -->
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:10px;flex-wrap:wrap">
         <div>
-          <div class="main-title" id="edTitle">New Campaign</div>
-          <div class="main-sub" id="edSub">Upload a frame PNG and configure text fields.</div>
+          <div style="font-size:18px;font-weight:700" id="edTitle">New Campaign</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px" id="edSub">Configure and save to get a share link.</div>
         </div>
-        <div class="actions">
-          <button class="btn btn-danger btn-sm" id="delBtn" style="display:none" onclick="deleteCampaign()">Delete</button>
-          <button class="btn btn-secondary btn-sm" onclick="cancelEdit()">Cancel</button>
-          <button class="btn btn-green" id="saveBtn" onclick="saveCampaign()">Save Campaign</button>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <button class="btn btn-red btn-sm" id="delBtn" style="display:none" onclick="doDelete()">Delete</button>
+          <button class="btn btn-ghost btn-sm" onclick="cancelEdit()">Cancel</button>
+          <button class="btn btn-green" id="saveBtn" onclick="doSave()">Save</button>
         </div>
       </div>
 
       <!-- Info -->
       <div class="card">
-        <div class="card-title">Campaign Info</div>
+        <div class="card-hd">Campaign Info</div>
         <div class="fg"><label>Campaign Name</label><input type="text" id="campName" placeholder="e.g. World Environment Day 2026"></div>
-        <div class="fg"><label>Description (shown to users)</label><textarea id="campDesc" rows="2" placeholder="Join the movement! Add the frame to your profile photo."></textarea></div>
+        <div class="fg"><label>Description (shown to users)</label><textarea id="campDesc" rows="2" placeholder="Add the frame and show your support!"></textarea></div>
       </div>
 
-      <!-- Frame Upload -->
+      <!-- Frame -->
       <div class="card">
-        <div class="card-title">Frame PNG</div>
-        <div id="dropZone" class="drop-zone" onclick="document.getElementById('frameFile').click()" ondragover="onDrag(event,true)" ondragleave="onDrag(event,false)" ondrop="onDrop(event)">
-          <div class="drop-icon">🖼️</div>
-          <div class="drop-text">Click or drag a transparent PNG frame here</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">Recommended: 1080×1080 · PNG with transparency</div>
+        <div class="card-hd">Frame PNG (transparent overlay)</div>
+        <div id="dropZone" class="drop-zone" onclick="document.getElementById('frameFile').click()" ondragover="ondg(event,true)" ondragleave="ondg(event,false)" ondrop="ondrop(event)">
+          <div id="dropInner">
+            <div style="font-size:26px;margin-bottom:6px">🖼️</div>
+            <div style="font-size:13px;color:var(--muted)">Click or drag PNG frame here</div>
+            <div style="font-size:11px;color:var(--muted);margin-top:3px">Transparent PNG · 1080×1080 recommended</div>
+          </div>
         </div>
-        <input type="file" id="frameFile" accept="image/png" style="display:none" onchange="loadFrame(event)">
-        <div id="frameInfo" style="font-size:12px;color:var(--muted);margin-top:8px;display:none"></div>
+        <input type="file" id="frameFile" accept="image/png,image/jpeg" style="display:none" onchange="loadFrame(event)">
+        <div id="frameInfo" style="font-size:12px;color:var(--muted);margin-top:7px;display:none"></div>
       </div>
 
-      <!-- Canvas + Text Fields -->
+      <!-- Canvas + Fields -->
       <div class="card">
-        <div class="card-title" style="display:flex;align-items:center;justify-content:space-between">
-          <span>Canvas Preview &amp; Text Field Positions</span>
-          <span style="font-size:11px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">Drag text labels on canvas to reposition</span>
+        <div class="card-hd">
+          <span>Canvas Preview</span>
+          <span style="font-size:11px;color:var(--muted);font-weight:400;text-transform:none;letter-spacing:0">Drag field labels to reposition</span>
         </div>
         <div class="canvas-wrap" id="canvasWrap">
           <canvas id="adminCanvas"></canvas>
         </div>
 
-        <!-- Text Fields -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <span style="font-size:13px;font-weight:600">Text Fields</span>
-          <button class="btn btn-secondary btn-sm" onclick="addTextField()">+ Add Field</button>
+          <button class="btn btn-ghost btn-sm" onclick="addField()">+ Add Field</button>
         </div>
-        <div id="tfContainer"></div>
-        <div id="tfEmpty" style="text-align:center;padding:14px 0;font-size:13px;color:var(--muted)">No text fields. Click "Add Field" to add one.</div>
+        <div id="tfList"></div>
+        <div id="tfEmpty" style="font-size:13px;color:var(--muted);text-align:center;padding:12px 0">No text fields. Click "Add Field".</div>
       </div>
 
       <!-- Share Link -->
       <div class="card" id="shareCard" style="display:none">
-        <div class="card-title">User Link</div>
-        <div style="font-size:13px;color:var(--muted);margin-bottom:4px">Share this link with your audience:</div>
+        <div class="card-hd">Share Link</div>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Send this link to your audience:</div>
         <div class="link-box">
           <span class="link-url" id="shareURL">—</span>
-          <button class="btn btn-secondary btn-sm" onclick="copyLink()">Copy</button>
+          <button class="btn btn-ghost btn-sm" onclick="copyLink()">Copy</button>
         </div>
       </div>
-    </div><!-- /editorState -->
+
+    </div><!-- /editor -->
   </div><!-- /main -->
 </div><!-- /tabCampaigns -->
 
 <!-- LOGS TAB -->
-<div id="tabLogs" style="display:none;padding:22px">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+<div id="tabLogs" style="display:none;padding:18px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px">
     <div>
-      <div style="font-size:19px;font-weight:700">Submission Logs</div>
-      <div style="font-size:13px;color:var(--muted);margin-top:3px">All downloads across all campaigns</div>
+      <div style="font-size:18px;font-weight:700">Submission Logs</div>
+      <div style="font-size:12px;color:var(--muted);margin-top:2px">All downloads across all campaigns</div>
     </div>
-    <div style="display:flex;gap:8px;align-items:center">
-      <select id="logFilter" style="width:220px" onchange="filterLogs()">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="logFilter" style="width:180px;height:34px" onchange="loadLogs()">
         <option value="">All campaigns</option>
       </select>
-      <button class="btn btn-secondary btn-sm" onclick="loadLogs()">Refresh</button>
-      <button class="btn btn-secondary btn-sm" onclick="exportCSV()">Export CSV</button>
+      <button class="btn btn-ghost btn-sm" onclick="loadLogs()">↻ Refresh</button>
+      <button class="btn btn-ghost btn-sm" onclick="exportCSV()">↓ CSV</button>
     </div>
   </div>
-  <div class="card" style="overflow-x:auto">
-    <table class="log-table" id="logTable">
-      <thead><tr>
-        <th>Photo</th><th>Campaign</th><th>Text Data</th><th>Timestamp</th>
-      </tr></thead>
-      <tbody id="logBody"><tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted)">Loading…</td></tr></tbody>
-    </table>
+  <div class="card">
+    <div class="log-scroll">
+      <table class="log-table">
+        <thead><tr><th>Photo</th><th>Campaign</th><th>Text</th><th>Time</th></tr></thead>
+        <tbody id="logBody"><tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted)">Loading…</td></tr></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -257,62 +276,172 @@ input[type=color]{padding:2px 4px;cursor:pointer;height:36px}
 // ================================================================
 // CONFIG
 // ================================================================
-const API = 'https://script.google.com/macros/s/AKfycbxehno2PoWxmgUZOWnxdNUVYZCkhkk3Q6_sJQsAGlSqpI79GJ0CTrwuEnvuoINmCjdu/exec';
-const USER_URL = 'https://github.com/shamsu-ca/CA-Campaign-Maker/blob/fbb4731085051dc2c29e00650f90b6ffa8813cbc/user.html'; // e.g. https://yoursite.com/user.html
+const API = 'https://script.google.com/macros/s/AKfycbzG73-1SLQqAAA_RJGN95Ik8hSUHNCdaPqZgUvrSs0oxeMtb8QOJSJD5HSx3kl5F8P5/exec';
+const USER_URL = 'YOUR_USER_PAGE_URL_HERE'; // e.g. https://ca-campaign-maker.vercel.app
+
+// ================================================================
+// GOOGLE FONTS CATALOG
+// Key = display name, value = { family: CSS family name, weights: [...] }
+// Add more from fonts.google.com by following the same pattern.
+// ================================================================
+const GFONTS = {
+  'Anek Malayalam': {
+    family: 'Anek Malayalam',
+    url: 'https://fonts.googleapis.com/css2?family=Anek+Malayalam:wght@100;200;300;400;500;600;700;800&display=swap',
+    weights: [
+      { label: 'Thin (100)',        value: '100' },
+      { label: 'Extra Light (200)', value: '200' },
+      { label: 'Light (300)',       value: '300' },
+      { label: 'Regular (400)',     value: '400' },
+      { label: 'Medium (500)',      value: '500' },
+      { label: 'Semi Bold (600)',   value: '600' },
+      { label: 'Bold (700)',        value: '700' },
+      { label: 'Extra Bold (800)',  value: '800' },
+    ]
+  },
+  'Inter': {
+    family: 'Inter',
+    url: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+    weights: [
+      { label: 'Regular (400)', value: '400' },
+      { label: 'Medium (500)',  value: '500' },
+      { label: 'Semi Bold (600)', value: '600' },
+      { label: 'Bold (700)',    value: '700' },
+    ]
+  },
+  'Roboto': {
+    family: 'Roboto',
+    url: 'https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap',
+    weights: [
+      { label: 'Light (300)',   value: '300' },
+      { label: 'Regular (400)', value: '400' },
+      { label: 'Medium (500)',  value: '500' },
+      { label: 'Bold (700)',    value: '700' },
+      { label: 'Black (900)',   value: '900' },
+    ]
+  },
+  'Noto Sans': {
+    family: 'Noto Sans',
+    url: 'https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700;900&display=swap',
+    weights: [
+      { label: 'Light (300)',   value: '300' },
+      { label: 'Regular (400)', value: '400' },
+      { label: 'Medium (500)',  value: '500' },
+      { label: 'Semi Bold (600)', value: '600' },
+      { label: 'Bold (700)',    value: '700' },
+      { label: 'Black (900)',   value: '900' },
+    ]
+  },
+  'Poppins': {
+    family: 'Poppins',
+    url: 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap',
+    weights: [
+      { label: 'Light (300)',   value: '300' },
+      { label: 'Regular (400)', value: '400' },
+      { label: 'Medium (500)',  value: '500' },
+      { label: 'Semi Bold (600)', value: '600' },
+      { label: 'Bold (700)',    value: '700' },
+      { label: 'Extra Bold (800)', value: '800' },
+    ]
+  },
+  'Lato': {
+    family: 'Lato',
+    url: 'https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap',
+    weights: [
+      { label: 'Light (300)',   value: '300' },
+      { label: 'Regular (400)', value: '400' },
+      { label: 'Bold (700)',    value: '700' },
+      { label: 'Black (900)',   value: '900' },
+    ]
+  },
+  'Montserrat': {
+    family: 'Montserrat',
+    url: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap',
+    weights: [
+      { label: 'Light (300)',   value: '300' },
+      { label: 'Regular (400)', value: '400' },
+      { label: 'Medium (500)',  value: '500' },
+      { label: 'Semi Bold (600)', value: '600' },
+      { label: 'Bold (700)',    value: '700' },
+      { label: 'Extra Bold (800)', value: '800' },
+      { label: 'Black (900)',   value: '900' },
+    ]
+  },
+  'Playfair Display': {
+    family: 'Playfair Display',
+    url: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap',
+    weights: [
+      { label: 'Regular (400)', value: '400' },
+      { label: 'Medium (500)',  value: '500' },
+      { label: 'Semi Bold (600)', value: '600' },
+      { label: 'Bold (700)',    value: '700' },
+      { label: 'Extra Bold (800)', value: '800' },
+      { label: 'Black (900)',   value: '900' },
+    ]
+  },
+  // System fonts (no Google Fonts load needed)
+  'Arial':           { family: 'Arial',           url: null, weights: [{ label:'Regular', value:'400' },{ label:'Bold', value:'700' }] },
+  'Georgia':         { family: 'Georgia',          url: null, weights: [{ label:'Regular', value:'400' },{ label:'Bold', value:'700' }] },
+  'Times New Roman': { family: 'Times New Roman',  url: null, weights: [{ label:'Regular', value:'400' },{ label:'Bold', value:'700' }] },
+  'Impact':          { family: 'Impact',            url: null, weights: [{ label:'Regular', value:'400' }] },
+  'Courier New':     { family: 'Courier New',       url: null, weights: [{ label:'Regular', value:'400' },{ label:'Bold', value:'700' }] },
+};
+
+const loadedFonts = new Set(['Arial','Georgia','Times New Roman','Impact','Courier New']);
+
+async function ensureFontLoaded(fontKey) {
+  if (loadedFonts.has(fontKey)) return;
+  const f = GFONTS[fontKey];
+  if (!f || !f.url) return;
+  if (document.querySelector(`link[href="${f.url}"]`)) { loadedFonts.add(fontKey); return; }
+  const link = document.createElement('link');
+  link.rel = 'stylesheet'; link.href = f.url;
+  document.head.appendChild(link);
+  await document.fonts.ready;
+  loadedFonts.add(fontKey);
+}
 
 // ================================================================
 // STATE
 // ================================================================
-let campaigns = [];
-let current   = null;  // current campaign object
-let frameImg  = null;  // HTMLImageElement
-let frameB64  = null;
-let frameMime = 'image/png';
-let frameName = 'frame.png';
-let frameURL  = null;
+let campaigns = [], current = null;
+let frameImg = null, frameB64 = null, frameMime = 'image/png', frameName = 'frame.png', frameURL = null;
 let textFields = [];
-let allLogs   = [];
-let draggingField = null;
-let dragOffX = 0, dragOffY = 0;
-
-const PREVIEW_W = 520;
+let allLogs = [];
+let dragging = null, dox = 0, doy = 0;
+const PW = 500; // preview width
 
 // ================================================================
 // INIT
 // ================================================================
-window.onload = () => { loadCampaigns(); };
+window.onload = () => loadCampaigns();
 
 // ================================================================
-// TAB SWITCHING
+// TABS
 // ================================================================
-function switchTab(tab) {
-  document.getElementById('tabCampaigns').style.display = tab === 'campaigns' ? 'grid' : 'none';
-  document.getElementById('tabLogs').style.display      = tab === 'logs'      ? 'block' : 'none';
-  document.querySelectorAll('.tab').forEach((t,i) => {
-    t.classList.toggle('active', (i===0 && tab==='campaigns') || (i===1 && tab==='logs'));
-  });
-  if (tab === 'logs') loadLogs();
+function switchTab(t) {
+  document.getElementById('tabCampaigns').style.display = t === 'campaigns' ? 'grid' : 'none';
+  document.getElementById('tabLogs').style.display      = t === 'logs'      ? 'block' : 'none';
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('on', (i===0&&t==='campaigns')||(i===1&&t==='logs')));
+  if (t === 'logs') loadLogs();
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
 }
 
 // ================================================================
 // API
 // ================================================================
-async function post(data) {
-  const r = await fetch(API, { method:'POST', body: JSON.stringify(data) });
-  return r.json();
-}
-async function get(params) {
-  const qs = new URLSearchParams(params).toString();
-  const r = await fetch(`${API}?${qs}`);
-  return r.json();
-}
+async function post(d) { return (await fetch(API,{method:'POST',body:JSON.stringify(d)})).json(); }
+async function get(p)  { return (await fetch(`${API}?${new URLSearchParams(p)}`)).json(); }
 
 // ================================================================
-// CAMPAIGNS LIST
+// CAMPAIGNS
 // ================================================================
 async function loadCampaigns() {
   const d = await get({ action:'getCampaigns' });
-  if (d.error) { toast('Failed to load: ' + d.error, 'err'); return; }
+  if (d.error) { toast('Load failed: '+d.error,'err'); return; }
   campaigns = d.campaigns || [];
   renderSidebar();
   populateLogFilter();
@@ -320,436 +449,395 @@ async function loadCampaigns() {
 
 function renderSidebar() {
   document.getElementById('campCount').textContent = campaigns.length;
-  const list = document.getElementById('campList');
-  if (!campaigns.length) { list.innerHTML = '<div class="camp-empty">No campaigns yet.</div>'; return; }
-  list.innerHTML = campaigns.map(c => `
-    <div class="camp-item ${current && current.id === c.id ? 'active':''}" onclick="selectCampaign('${c.id}')">
-      <div class="camp-item-name">${esc(c.name)}</div>
-      <div class="camp-item-meta">${c.active ? '🟢 Active' : '⚪ Inactive'} · ${fmtDate(c.createdAt)}</div>
-    </div>
-  `).join('');
+  const el = document.getElementById('campList');
+  if (!campaigns.length) { el.innerHTML = '<div class="camp-empty">No campaigns yet.</div>'; return; }
+  el.innerHTML = campaigns.map(c=>`
+    <div class="camp-item ${current&&current.id===c.id?'on':''}" onclick="selectCampaign('${c.id}');document.getElementById('sidebar').classList.remove('open')">
+      <div class="camp-name">${esc(c.name)}</div>
+      <div class="camp-meta">${c.active?'🟢 Active':'⚪ Inactive'} · ${fd(c.createdAt)}</div>
+    </div>`).join('');
 }
 
 // ================================================================
-// EDITOR — NEW / SELECT / CANCEL
+// EDITOR
 // ================================================================
 function newCampaign() {
-  current = null; frameImg = null; frameB64 = null; frameURL = null;
-  textFields = [];
-  showEditor();
-  document.getElementById('campName').value = '';
-  document.getElementById('campDesc').value = '';
-  document.getElementById('edTitle').textContent = 'New Campaign';
-  document.getElementById('edSub').textContent = 'Upload a frame PNG and configure text fields.';
-  document.getElementById('delBtn').style.display = 'none';
-  document.getElementById('shareCard').style.display = 'none';
-  document.getElementById('dropZone').innerHTML = `<div class="drop-icon">🖼️</div><div class="drop-text">Click or drag a transparent PNG frame here</div><div style="font-size:11px;color:var(--muted);margin-top:4px">Recommended: 1080×1080 · PNG with transparency</div>`;
-  document.getElementById('frameInfo').style.display = 'none';
-  renderTextFields();
-  drawAdminCanvas();
+  current=null; frameImg=null; frameB64=null; frameURL=null; textFields=[];
+  showEditor(null);
 }
 
 async function selectCampaign(id) {
   const d = await get({ action:'getCampaign', id });
-  if (d.error) { toast('Load failed', 'err'); return; }
+  if (d.error) { toast('Load failed','err'); return; }
   current = d.campaign;
   textFields = current.textFields || [];
-  frameURL = current.frameURL;
-  frameB64 = null;
+  frameURL = current.frameURL; frameB64 = null;
+  showEditor(current);
+}
 
-  showEditor();
-  document.getElementById('campName').value = current.name;
-  document.getElementById('campDesc').value = current.description || '';
-  document.getElementById('edTitle').textContent = current.name;
-  document.getElementById('edSub').textContent   = 'ID: ' + current.id;
-  document.getElementById('delBtn').style.display = '';
-  setShareLink(current.id);
+function showEditor(c) {
+  document.getElementById('emptyState').style.display = 'none';
+  document.getElementById('editorState').style.display = 'block';
+  document.getElementById('edTitle').textContent = c ? c.name : 'New Campaign';
+  document.getElementById('edSub').textContent   = c ? 'ID: '+c.id : 'Configure and save to get a share link.';
+  document.getElementById('delBtn').style.display = c ? '' : 'none';
+  document.getElementById('campName').value = c ? c.name : '';
+  document.getElementById('campDesc').value = c ? (c.description||'') : '';
 
-  renderTextFields();
+  // Reset drop zone
+  document.getElementById('dropZone').className = 'drop-zone' + (c&&c.frameURL?' done':'');
+  document.getElementById('dropInner').innerHTML = c && c.frameURL
+    ? `<div style="font-size:22px;margin-bottom:5px">✅</div><div style="font-size:13px;color:var(--green)">Frame loaded from Drive</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Click to replace</div>`
+    : `<div style="font-size:26px;margin-bottom:6px">🖼️</div><div style="font-size:13px;color:var(--muted)">Click or drag PNG frame here</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Transparent PNG · 1080×1080 recommended</div>`;
+  document.getElementById('frameInfo').style.display = 'none';
 
-  // Load frame for preview
-  if (frameURL) {
+  if (c && c.frameURL) {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => { frameImg = img; drawAdminCanvas(); };
-    img.onerror = () => { drawAdminCanvas(); };
-    img.src = frameURL;
-    document.getElementById('dropZone').innerHTML = `<div class="drop-icon">✅</div><div class="drop-text">Frame loaded from Drive</div>`;
-    document.getElementById('dropZone').classList.add('done');
+    img.onerror = () => drawAdminCanvas();
+    img.src = c.frameURL;
+  } else {
+    frameImg = null; drawAdminCanvas();
   }
+
+  if (c) setShareLink(c.id);
+  else document.getElementById('shareCard').style.display = 'none';
+
+  renderFields();
   renderSidebar();
 }
 
 function cancelEdit() {
   current = null;
   document.getElementById('editorState').style.display = 'none';
-  document.getElementById('emptyState').style.display  = 'block';
+  document.getElementById('emptyState').style.display = 'block';
   renderSidebar();
 }
 
-function showEditor() {
-  document.getElementById('emptyState').style.display  = 'none';
-  document.getElementById('editorState').style.display = 'block';
-}
-
 // ================================================================
-// FRAME UPLOAD
+// FRAME
 // ================================================================
-function onDrag(e, active) { e.preventDefault(); document.getElementById('dropZone').classList.toggle('drag', active); }
-function onDrop(e) { e.preventDefault(); onDrag(e, false); const f = e.dataTransfer.files[0]; if (f) processFrame(f); }
-function loadFrame(e) { const f = e.target.files[0]; if (f) processFrame(f); }
+function ondg(e,a){ e.preventDefault(); document.getElementById('dropZone').classList.toggle('drag',a); }
+function ondrop(e){ e.preventDefault(); ondg(e,false); const f=e.dataTransfer.files[0]; if(f) processFrame(f); }
+function loadFrame(e){ const f=e.target.files[0]; if(f) processFrame(f); }
 
 function processFrame(file) {
-  if (!file.type.startsWith('image/')) { toast('PNG files only', 'err'); return; }
+  if (!file.type.startsWith('image/')) { toast('Image files only','err'); return; }
   frameMime = file.type; frameName = file.name;
-  const reader = new FileReader();
-  reader.onload = ev => {
+  const r = new FileReader();
+  r.onload = ev => {
     frameB64 = ev.target.result.split(',')[1];
     const img = new Image();
-    img.onload = () => {
-      frameImg = img;
-      drawAdminCanvas();
-    };
+    img.onload = () => { frameImg = img; drawAdminCanvas(); };
     img.src = ev.target.result;
-    document.getElementById('dropZone').innerHTML = `<div class="drop-icon">✅</div><div class="drop-text">${esc(file.name)}</div>`;
+    document.getElementById('dropZone').classList.replace('drop-zone','drop-zone');
     document.getElementById('dropZone').classList.add('done');
+    document.getElementById('dropInner').innerHTML = `<div style="font-size:22px;margin-bottom:5px">✅</div><div style="font-size:13px;color:var(--green);font-weight:600">${esc(file.name)}</div><div style="font-size:11px;color:var(--muted);margin-top:3px">Click to replace</div>`;
     document.getElementById('frameInfo').style.display = 'block';
-    document.getElementById('frameInfo').textContent = `Will upload on save · ${file.name}`;
+    document.getElementById('frameInfo').textContent = 'Will upload on save · '+file.name;
   };
-  reader.readAsDataURL(file);
+  r.readAsDataURL(file);
 }
 
 // ================================================================
-// ADMIN CANVAS DRAW + DRAG TEXT FIELDS
+// CANVAS PREVIEW
 // ================================================================
-function scale() {
-  if (!frameImg) return 1;
-  return PREVIEW_W / frameImg.width;
-}
+function sc() { return frameImg ? PW / frameImg.width : 1; }
 
 function drawAdminCanvas() {
-  const canvas = document.getElementById('adminCanvas');
-  const ctx    = canvas.getContext('2d');
+  const cv = document.getElementById('adminCanvas');
+  const ctx = cv.getContext('2d');
 
   if (!frameImg) {
-    canvas.width = PREVIEW_W; canvas.height = 340;
-    ctx.fillStyle = '#9ca3af';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#fff';
-    ctx.font = '15px sans-serif';
+    cv.width = PW; cv.height = 340;
+    drawChecker(ctx, PW, 340);
+    ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.font = '14px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Upload a frame PNG to preview', canvas.width/2, canvas.height/2);
+    ctx.fillText('Upload a frame PNG to preview', PW/2, 175);
     return;
   }
 
-  const sc = scale();
-  canvas.width  = Math.round(frameImg.width  * sc);
-  canvas.height = Math.round(frameImg.height * sc);
+  const s = sc();
+  cv.width  = Math.round(frameImg.width  * s);
+  cv.height = Math.round(frameImg.height * s);
+  drawChecker(ctx, cv.width, cv.height);
+  ctx.drawImage(frameImg, 0, 0, cv.width, cv.height);
 
-  // Checkerboard (transparency bg)
-  drawCheckerboard(ctx, canvas.width, canvas.height);
-
-  // Draw frame
-  ctx.drawImage(frameImg, 0, 0, canvas.width, canvas.height);
-
-  // Draw text field handles
   textFields.forEach((f, i) => {
-    const x  = (f.x || 100) * sc;
-    const y  = (f.y || 100) * sc;
-    const mw = (f.maxWidth || 300) * sc;
-    const fs = Math.max(10, Math.min(60, (f.size || 28) * sc));
+    const fx  = (f.x||100) * s;
+    const fy  = (f.y||100) * s;
+    const fw  = (f.maxWidth||300) * s;
+    const fsi = Math.max(10, Math.min(80, (f.size||32) * s));
+    const fontStr = buildFontStr(fsi, f);
 
     ctx.save();
-    ctx.strokeStyle = '#2563eb';
-    ctx.lineWidth = 1.5;
+    // bounding box
+    ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 1.5;
     ctx.setLineDash([5,3]);
-    ctx.strokeRect(x, y - fs, mw, fs + 8);
+    ctx.strokeRect(fx, fy - fsi - 2, fw, fsi + 10);
     ctx.setLineDash([]);
 
-    // Label pill
+    // handle grip
     ctx.fillStyle = '#2563eb';
-    ctx.font = `bold 11px sans-serif`;
-    const label = f.label || `Field ${i+1}`;
-    ctx.fillText('✥ ' + label, x + 4, y - fs + 13);
+    ctx.fillRect(fx, fy - fsi - 2, fw, 16);
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 10px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('✥ ' + (f.label||`Field ${i+1}`), fx + 4, fy - fsi + 10);
 
-    // Sample text
-    ctx.font = `${fs}px ${f.font || 'Arial'}`;
-    ctx.fillStyle = f.color || '#000000';
+    // sample text
+    ctx.font = fontStr;
+    ctx.fillStyle = f.color || '#000';
     ctx.textAlign = f.align || 'left';
-    const tx = f.align === 'center' ? x + mw/2 : f.align === 'right' ? x + mw : x;
-    ctx.fillText(f.label || 'Sample Text', tx, y, mw);
+    const tx = f.align === 'center' ? fx + fw/2 : f.align === 'right' ? fx + fw : fx;
+    ctx.fillText(f.label || 'Sample', tx, fy, fw);
     ctx.restore();
   });
 }
 
-function drawCheckerboard(ctx, w, h) {
-  const sz = 12;
-  for (let row = 0; row * sz < h; row++) {
-    for (let col = 0; col * sz < w; col++) {
-      ctx.fillStyle = (row + col) % 2 === 0 ? '#e5e7eb' : '#f9fafb';
-      ctx.fillRect(col*sz, row*sz, sz, sz);
-    }
+function buildFontStr(size, f) {
+  const w = f.weight || '400';
+  const fam = (GFONTS[f.fontKey] ? GFONTS[f.fontKey].family : null) || f.fontKey || 'Arial';
+  return `${w} ${size}px "${fam}"`;
+}
+
+function drawChecker(ctx, w, h) {
+  const sz = 14;
+  for (let r=0; r*sz<h; r++) for (let c=0; c*sz<w; c++) {
+    ctx.fillStyle = (r+c)%2===0 ? '#e5e7eb' : '#f9fafb';
+    ctx.fillRect(c*sz, r*sz, sz, sz);
   }
 }
 
 // Canvas drag for text field repositioning
-const adminCanvas = document.getElementById('adminCanvas');
-adminCanvas.addEventListener('mousedown', e => {
+const acv = document.getElementById('adminCanvas');
+acv.addEventListener('mousedown', e => {
   if (!frameImg) return;
-  const rect = adminCanvas.getBoundingClientRect();
-  const sc = scale();
-  const mx = (e.clientX - rect.left) * (adminCanvas.width / rect.width);
-  const my = (e.clientY - rect.top)  * (adminCanvas.height / rect.height);
-
-  for (let i = textFields.length - 1; i >= 0; i--) {
-    const f  = textFields[i];
-    const fx = (f.x || 0) * sc;
-    const fy = (f.y || 0) * sc;
-    const fw = (f.maxWidth || 300) * sc;
-    const fh = Math.max(10, (f.size || 28) * sc) + 8;
-    if (mx >= fx && mx <= fx+fw && my >= fy-fh && my <= fy+8) {
-      draggingField = i;
-      dragOffX = mx - fx;
-      dragOffY = my - (fy - fh);
-      adminCanvas.style.cursor = 'move';
-      break;
+  const rect = acv.getBoundingClientRect();
+  const s = sc();
+  const mx = (e.clientX-rect.left)*(acv.width/rect.width);
+  const my = (e.clientY-rect.top)*(acv.height/rect.height);
+  for (let i=textFields.length-1; i>=0; i--) {
+    const f=textFields[i];
+    const fx=(f.x||0)*s, fy=(f.y||0)*s, fw=(f.maxWidth||300)*s, fh=Math.max(10,(f.size||32)*s)+10;
+    if (mx>=fx&&mx<=fx+fw&&my>=fy-fh&&my<=fy+8) {
+      dragging=i; dox=mx-fx; doy=my-(fy-fh);
+      acv.style.cursor='move'; break;
     }
   }
 });
-
-adminCanvas.addEventListener('mousemove', e => {
-  if (draggingField === null) return;
-  const rect = adminCanvas.getBoundingClientRect();
-  const sc = scale();
-  const mx = (e.clientX - rect.left) * (adminCanvas.width / rect.width);
-  const my = (e.clientY - rect.top)  * (adminCanvas.height / rect.height);
-  const fh = Math.max(10, (textFields[draggingField].size || 28) * sc) + 8;
-  textFields[draggingField].x = Math.round((mx - dragOffX) / sc);
-  textFields[draggingField].y = Math.round((my - dragOffY + fh) / sc);
-  drawAdminCanvas();
-  syncFieldInputs(draggingField);
+window.addEventListener('mousemove', e => {
+  if (dragging===null) return;
+  const rect=acv.getBoundingClientRect(), s=sc();
+  const mx=(e.clientX-rect.left)*(acv.width/rect.width);
+  const my=(e.clientY-rect.top)*(acv.height/rect.height);
+  const fh=Math.max(10,(textFields[dragging].size||32)*s)+10;
+  textFields[dragging].x = Math.round((mx-dox)/s);
+  textFields[dragging].y = Math.round((my-doy+fh)/s);
+  drawAdminCanvas(); syncXY(dragging);
 });
+window.addEventListener('mouseup', () => { dragging=null; acv.style.cursor='crosshair'; });
 
-adminCanvas.addEventListener('mouseup',    () => { draggingField = null; adminCanvas.style.cursor = 'default'; });
-adminCanvas.addEventListener('mouseleave', () => { draggingField = null; });
-
-function syncFieldInputs(i) {
-  const xi = document.getElementById(`tf_x_${i}`);
-  const yi = document.getElementById(`tf_y_${i}`);
-  if (xi) xi.value = textFields[i].x;
-  if (yi) yi.value = textFields[i].y;
+function syncXY(i) {
+  const xi=document.getElementById(`fx_${i}`), yi=document.getElementById(`fy_${i}`);
+  if (xi) xi.value=textFields[i].x;
+  if (yi) yi.value=textFields[i].y;
 }
 
 // ================================================================
-// TEXT FIELDS MANAGEMENT
+// TEXT FIELDS
 // ================================================================
-const FONTS   = ['Arial','Georgia','Verdana','Times New Roman','Trebuchet MS','Impact','Courier New','Tahoma','Roboto'];
-const ALIGNS  = ['left','center','right'];
-
-function addTextField() {
+function addField() {
+  const defX = frameImg ? Math.round(frameImg.width * 0.1) : 100;
+  const defY = frameImg ? Math.round(frameImg.height * 0.85) : 400;
+  const defW = frameImg ? Math.round(frameImg.width * 0.8) : 500;
   textFields.push({
-    label:    'Name',
-    type:     'text',       // 'text' or 'dropdown'
-    options:  [],           // for dropdown
-    x:        Math.round((frameImg ? frameImg.width  : 500) * 0.1),
-    y:        Math.round((frameImg ? frameImg.height : 500) * 0.85),
-    maxWidth: Math.round((frameImg ? frameImg.width  : 500) * 0.8),
-    font:     'Arial',
-    size:     48,
-    color:    '#000000',
-    align:    'center',
-    centered: false
+    label:'Name', type:'text', options:[],
+    fontKey:'Anek Malayalam', weight:'700',
+    x:defX, y:defY, maxWidth:defW,
+    size:52, color:'#000000', align:'center', centered:true
   });
-  renderTextFields();
-  drawAdminCanvas();
+  renderFields(); drawAdminCanvas();
 }
 
-function removeTextField(i) { textFields.splice(i, 1); renderTextFields(); drawAdminCanvas(); }
+function removeField(i) { textFields.splice(i,1); renderFields(); drawAdminCanvas(); }
 
-function updateTF(i, key, val) {
-  if (['x','y','maxWidth','size'].includes(key)) val = parseInt(val) || 0;
-  textFields[i][key] = val;
-  if (key === 'centered') centerField(i);
+function updateF(i, k, v) {
+  if (['x','y','maxWidth','size'].includes(k)) v = parseInt(v)||0;
+  textFields[i][k] = v;
+  if (k==='centered' && v) centerField(i);
+  if (k==='fontKey') { updateWeightOptions(i); ensureFontLoaded(v).then(()=>drawAdminCanvas()); return; }
   drawAdminCanvas();
 }
 
 function centerField(i) {
-  if (!textFields[i].centered || !frameImg) return;
+  if (!frameImg) return;
+  textFields[i].x = Math.round((frameImg.width - textFields[i].maxWidth) / 2);
+  syncXY(i);
+  const xi=document.getElementById(`fx_${i}`);
+  if (xi) xi.value=textFields[i].x;
+}
+
+function updateWeightOptions(i) {
   const f = textFields[i];
-  f.x = Math.round((frameImg.width - f.maxWidth) / 2);
-  syncFieldInputs(i);
-  const xi = document.getElementById(`tf_x_${i}`);
-  if (xi) xi.value = f.x;
+  const fdata = GFONTS[f.fontKey];
+  const sel = document.getElementById(`fw_${i}`);
+  if (!sel || !fdata) return;
+  sel.innerHTML = fdata.weights.map(w=>`<option value="${w.value}" ${f.weight===w.value?'selected':''}>${w.label}</option>`).join('');
+  // update preview
+  const prev = document.getElementById(`fprev_${i}`);
+  if (prev) { prev.style.fontFamily = `"${fdata.family}"`; prev.style.fontWeight = f.weight; }
 }
 
-function addDropdownOption(i) {
-  textFields[i].options = textFields[i].options || [];
-  textFields[i].options.push('');
-  renderTextFields();
-}
+function addOption(i) { textFields[i].options.push(''); renderFields(); }
+function removeOption(i,oi) { textFields[i].options.splice(oi,1); renderFields(); }
+function setOption(i,oi,v) { textFields[i].options[oi]=v; }
 
-function removeDropdownOption(i, oi) {
-  textFields[i].options.splice(oi, 1);
-  renderTextFields();
-}
+function renderFields() {
+  const el = document.getElementById('tfList');
+  const em = document.getElementById('tfEmpty');
+  if (!textFields.length) { el.innerHTML=''; em.style.display=''; return; }
+  em.style.display='none';
 
-function updateOption(i, oi, val) {
-  textFields[i].options[oi] = val;
-}
+  el.innerHTML = textFields.map((f,i) => {
+    const fdata = GFONTS[f.fontKey] || GFONTS['Arial'];
+    const weightOpts = fdata.weights.map(w=>`<option value="${w.value}" ${f.weight===w.value?'selected':''}>${w.label}</option>`).join('');
+    const fontOpts   = Object.keys(GFONTS).map(k=>`<option value="${esc(k)}" ${f.fontKey===k?'selected':''}>${esc(k)}</option>`).join('');
+    const alignOpts  = ['left','center','right'].map(a=>`<option value="${a}" ${f.align===a?'selected':''}>${a.charAt(0).toUpperCase()+a.slice(1)}</option>`).join('');
 
-function renderTextFields() {
-  const c = document.getElementById('tfContainer');
-  const e = document.getElementById('tfEmpty');
-  if (!textFields.length) { c.innerHTML = ''; e.style.display = ''; return; }
-  e.style.display = 'none';
-
-  c.innerHTML = textFields.map((f, i) => `
-    <div class="tf-block">
-      <div class="tf-head">
-        <span class="tf-label">Field ${i+1}: ${esc(f.label || '(unlabeled)')}</span>
+    return `<div class="tf-block">
+      <div class="tf-hd">
+        <span class="tf-name">Field ${i+1}: ${esc(f.label||'(unlabeled)')}</span>
         <div style="display:flex;gap:6px;align-items:center">
-          <span class="tf-type-badge">${f.type === 'dropdown' ? 'Dropdown' : 'Text'}</span>
-          <button class="icon-btn" onclick="removeTextField(${i})" title="Remove">✕</button>
+          <span class="chip ${f.type==='dropdown'?'chip-drop':'chip-text'}">${f.type==='dropdown'?'Dropdown':'Text'}</span>
+          <button class="icon-btn" onclick="removeField(${i})">✕</button>
         </div>
       </div>
 
-      <div class="grid2" style="margin-bottom:10px">
+      <div class="g2">
         <div class="fg"><label>Field Label</label>
           <input type="text" value="${esc(f.label)}" placeholder="e.g. Name"
-            onchange="textFields[${i}].label=this.value; drawAdminCanvas(); document.querySelector('#tfContainer .tf-block:nth-child(${i+1}) .tf-label').textContent='Field ${i+1}: '+(this.value||'(unlabeled)')">
+            onchange="textFields[${i}].label=this.value;drawAdminCanvas();this.closest('.tf-block').querySelector('.tf-name').textContent='Field ${i+1}: '+(this.value||'(unlabeled)')">
         </div>
         <div class="fg"><label>Input Type</label>
-          <select onchange="updateTF(${i},'type',this.value); renderTextFields()">
+          <select onchange="updateF(${i},'type',this.value);renderFields()">
             <option value="text" ${f.type!=='dropdown'?'selected':''}>Free text</option>
             <option value="dropdown" ${f.type==='dropdown'?'selected':''}>Dropdown list</option>
           </select>
         </div>
       </div>
 
-      ${f.type === 'dropdown' ? `
-        <div class="opts-wrap">
+      ${f.type==='dropdown'?`
+        <div style="margin-bottom:10px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-            <label style="font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em">Dropdown Options</label>
-            <button class="btn btn-secondary btn-sm" onclick="addDropdownOption(${i})">+ Option</button>
+            <label style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em">Dropdown Options</label>
+            <button class="btn btn-ghost btn-sm" onclick="addOption(${i})">+ Option</button>
           </div>
-          ${(f.options||[]).map((opt, oi) => `
+          ${(f.options||[]).map((o,oi)=>`
             <div class="opt-row">
-              <input type="text" value="${esc(opt)}" placeholder="Option ${oi+1}" onchange="updateOption(${i},${oi},this.value)">
-              <button class="icon-btn" onclick="removeDropdownOption(${i},${oi})">✕</button>
-            </div>
-          `).join('')}
-          ${!(f.options||[]).length ? '<div style="font-size:12px;color:var(--muted);padding:4px 0">No options yet.</div>' : ''}
-        </div>
-      ` : ''}
+              <input type="text" value="${esc(o)}" placeholder="Option ${oi+1}" onchange="setOption(${i},${oi},this.value)">
+              <button class="icon-btn" onclick="removeOption(${i},${oi})">✕</button>
+            </div>`).join('')}
+          ${!(f.options||[]).length?'<div style="font-size:12px;color:var(--muted)">No options yet.</div>':''}
+        </div>`:''}
 
-      <div class="grid2">
-        <div class="fg"><label>Font</label>
-          <select onchange="updateTF(${i},'font',this.value)">
-            ${FONTS.map(fn => `<option value="${fn}" ${f.font===fn?'selected':''}>${fn}</option>`).join('')}
-          </select>
+      <!-- Font family + weight -->
+      <div class="g2">
+        <div class="fg"><label>Font Family</label>
+          <select onchange="updateF(${i},'fontKey',this.value)">${fontOpts}</select>
         </div>
+        <div class="fg"><label>Font Weight / Style</label>
+          <select id="fw_${i}" onchange="textFields[${i}].weight=this.value;drawAdminCanvas()">${weightOpts}</select>
+        </div>
+      </div>
+
+      <!-- Font preview -->
+      <div class="font-preview" id="fprev_${i}"
+        style="font-family:'${esc(fdata.family)}';font-weight:${f.weight}">
+        ${esc(f.label||'Preview Text')}
+      </div>
+
+      <div class="g3" style="margin-top:10px">
+        <div class="fg"><label>Size (px)</label><input type="number" value="${f.size}" min="8" max="400" onchange="updateF(${i},'size',this.value)"></div>
+        <div class="fg"><label>Max Width (px)</label><input type="number" value="${f.maxWidth}" min="50" onchange="updateF(${i},'maxWidth',this.value);if(textFields[${i}].centered)centerField(${i})"></div>
+        <div class="fg"><label>Color</label><input type="color" value="${f.color}" oninput="updateF(${i},'color',this.value)"></div>
+      </div>
+
+      <div class="g2">
         <div class="fg"><label>Alignment</label>
-          <select onchange="updateTF(${i},'align',this.value)">
-            ${ALIGNS.map(a => `<option value="${a}" ${f.align===a?'selected':''}>${a.charAt(0).toUpperCase()+a.slice(1)}</option>`).join('')}
-          </select>
+          <select onchange="updateF(${i},'align',this.value)">${alignOpts}</select>
         </div>
+        <div></div>
       </div>
 
-      <div class="grid3">
-        <div class="fg"><label>Font Size (px)</label><input type="number" value="${f.size}" min="8" max="300" onchange="updateTF(${i},'size',this.value)"></div>
-        <div class="fg"><label>Max Width (px)</label><input type="number" value="${f.maxWidth}" min="50" onchange="updateTF(${i},'maxWidth',this.value); if(textFields[${i}].centered) centerField(${i})"></div>
-        <div class="fg"><label>Color</label><input type="color" value="${f.color}" oninput="updateTF(${i},'color',this.value)"></div>
+      <div class="g2">
+        <div class="fg"><label>X (px)</label><input type="number" id="fx_${i}" value="${f.x}" onchange="updateF(${i},'x',this.value)"></div>
+        <div class="fg"><label>Y (px)</label><input type="number" id="fy_${i}" value="${f.y}" onchange="updateF(${i},'y',this.value)"></div>
       </div>
 
-      <div class="grid2">
-        <div class="fg"><label>X Position (px)</label><input type="number" id="tf_x_${i}" value="${f.x}" min="0" onchange="updateTF(${i},'x',this.value)"></div>
-        <div class="fg"><label>Y Position (px)</label><input type="number" id="tf_y_${i}" value="${f.y}" min="0" onchange="updateTF(${i},'y',this.value)"></div>
+      <div style="display:flex;align-items:center;gap:7px;margin-top:2px">
+        <input type="checkbox" id="fc_${i}" ${f.centered?'checked':''} onchange="updateF(${i},'centered',this.checked)" style="width:auto;height:auto;cursor:pointer">
+        <label for="fc_${i}" style="font-size:12px;cursor:pointer;font-weight:400">Auto-centre horizontally on canvas</label>
       </div>
+    </div>`;
+  }).join('');
 
-      <div style="display:flex;align-items:center;gap:8px;margin-top:4px">
-        <input type="checkbox" id="tc_${i}" ${f.centered?'checked':''} onchange="updateTF(${i},'centered',this.checked)" style="width:auto;height:auto">
-        <label for="tc_${i}" style="font-size:12px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer">Auto-centre horizontally on canvas</label>
-      </div>
-    </div>
-  `).join('');
+  // Load fonts for each field
+  textFields.forEach(f => { if (f.fontKey) ensureFontLoaded(f.fontKey); });
 }
 
 // ================================================================
-// SAVE CAMPAIGN
+// SAVE
 // ================================================================
-async function saveCampaign() {
+async function doSave() {
   const name = document.getElementById('campName').value.trim();
-  if (!name) { toast('Enter a campaign name', 'err'); return; }
-  if (!frameImg && !frameURL) { toast('Upload a frame PNG first', 'err'); return; }
+  if (!name) { toast('Enter a campaign name','err'); return; }
+  if (!frameImg && !frameURL) { toast('Upload a frame PNG first','err'); return; }
 
   const btn = document.getElementById('saveBtn');
-  btn.innerHTML = '<span class="spin"></span> Saving…'; btn.disabled = true;
+  btn.innerHTML='<span class="spin"></span> Saving…'; btn.disabled=true;
 
   try {
-    // Upload frame if new file
     let fURL = frameURL;
     if (frameB64) {
       const up = await post({ action:'uploadFile', base64:frameB64, mimeType:frameMime, filename:frameName });
-      if (up.error) { toast('Frame upload failed: ' + up.error, 'err'); return; }
+      if (up.error) { toast('Upload failed: '+up.error,'err'); return; }
       fURL = up.url; frameURL = fURL; frameB64 = null;
     }
 
-    const payload = {
-      action:      'saveCampaign',
-      id:          current ? current.id : null,
-      name,
-      description: document.getElementById('campDesc').value.trim(),
-      frameURL:    fURL,
-      frameW:      frameImg ? frameImg.width  : 1080,
-      frameH:      frameImg ? frameImg.height : 1080,
-      textFields,
-      active:      true
-    };
+    const res = await post({
+      action:'saveCampaign', id: current?current.id:null,
+      name, description: document.getElementById('campDesc').value.trim(),
+      frameURL: fURL, frameW: frameImg?frameImg.width:1080, frameH: frameImg?frameImg.height:1080,
+      textFields, active: true
+    });
 
-    const res = await post(payload);
-    if (res.error) { toast('Save failed: ' + res.error, 'err'); return; }
-
-    if (!current) current = { id: res.id, name };
+    if (res.error) { toast('Save failed: '+res.error,'err'); return; }
+    if (!current) current = { id:res.id, name };
     current.name = name;
-
     setShareLink(res.id);
-    document.getElementById('shareCard').style.display = 'block';
     document.getElementById('delBtn').style.display = '';
     document.getElementById('edTitle').textContent = name;
-    document.getElementById('edSub').textContent   = 'ID: ' + res.id;
-
-    toast('Campaign saved!', 'ok');
+    document.getElementById('edSub').textContent = 'ID: '+res.id;
+    toast('Saved!','ok');
     await loadCampaigns();
-
-  } finally {
-    btn.innerHTML = 'Save Campaign'; btn.disabled = false;
-  }
+  } finally { btn.innerHTML='Save'; btn.disabled=false; }
 }
 
-// ================================================================
-// DELETE
-// ================================================================
-async function deleteCampaign() {
-  if (!current) return;
-  if (!confirm(`Delete "${current.name}"? This cannot be undone.`)) return;
-  const res = await post({ action:'deleteCampaign', id: current.id });
-  if (res.error) { toast('Delete failed', 'err'); return; }
-  toast('Campaign deleted');
-  current = null;
-  await loadCampaigns();
-  cancelEdit();
+async function doDelete() {
+  if (!current || !confirm(`Delete "${current.name}"?`)) return;
+  const res = await post({ action:'deleteCampaign', id:current.id });
+  if (res.error) { toast('Delete failed','err'); return; }
+  toast('Deleted'); current=null; await loadCampaigns(); cancelEdit();
 }
 
-// ================================================================
-// SHARE LINK
-// ================================================================
 function setShareLink(id) {
   document.getElementById('shareURL').textContent = `${USER_URL}?campaign=${id}`;
   document.getElementById('shareCard').style.display = 'block';
 }
 function copyLink() {
   navigator.clipboard.writeText(document.getElementById('shareURL').textContent);
-  toast('Link copied!', 'ok');
+  toast('Copied!','ok');
 }
 
 // ================================================================
@@ -757,72 +845,56 @@ function copyLink() {
 // ================================================================
 async function loadLogs() {
   const filt = document.getElementById('logFilter').value;
-  const d = await get({ action:'getLogs', campaignId: filt });
-  if (d.error) { toast('Logs error: ' + d.error, 'err'); return; }
-  allLogs = d.logs || [];
-  renderLogs(allLogs);
-}
-
-function filterLogs() { loadLogs(); }
-
-function renderLogs(logs) {
+  const d = await get({ action:'getLogs', campaignId:filt });
+  if (d.error) { toast('Logs error','err'); return; }
+  allLogs = d.logs||[];
   const tbody = document.getElementById('logBody');
-  if (!logs.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:24px;color:var(--muted)">No submissions yet.</td></tr>';
-    return;
-  }
-  tbody.innerHTML = logs.map(l => {
-    const td = typeof l.textData === 'object' ? l.textData : {};
-    const textStr = Object.entries(td).map(([k,v]) => `<strong>${esc(k)}:</strong> ${esc(v)}`).join('  ·  ');
-    const photoCell = l.photoURL
+  if (!allLogs.length) { tbody.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted)">No submissions yet.</td></tr>'; return; }
+  tbody.innerHTML = allLogs.map(l => {
+    const td = typeof l.textData==='object' ? l.textData : {};
+    const tStr = Object.entries(td).map(([k,v])=>`<strong>${esc(k)}:</strong> ${esc(v)}`).join(' · ');
+    const photo = l.photoURL
       ? `<a href="${esc(l.photoURL)}" target="_blank"><img class="log-photo" src="${esc(l.photoURL)}" onerror="this.style.display='none'"></a>`
-      : '<span style="color:var(--muted);font-size:12px">—</span>';
+      : '<span style="color:var(--muted)">—</span>';
     return `<tr>
-      <td>${photoCell}</td>
-      <td style="font-weight:600;font-size:13px">${esc(l.campaignName)}</td>
-      <td style="font-size:13px">${textStr || '—'}</td>
-      <td style="font-size:12px;color:var(--muted);white-space:nowrap">${fmtDate(l.timestamp)}</td>
+      <td>${photo}</td>
+      <td style="font-weight:600">${esc(l.campaignName)}</td>
+      <td style="font-size:12px">${tStr||'—'}</td>
+      <td style="font-size:12px;color:var(--muted);white-space:nowrap">${fd(l.timestamp)}</td>
     </tr>`;
   }).join('');
 }
 
 function populateLogFilter() {
   const sel = document.getElementById('logFilter');
-  const existing = [...sel.options].map(o => o.value);
+  const exist = [...sel.options].map(o=>o.value);
   campaigns.forEach(c => {
-    if (!existing.includes(c.id)) {
-      const o = document.createElement('option');
-      o.value = c.id; o.textContent = c.name;
-      sel.appendChild(o);
+    if (!exist.includes(c.id)) {
+      const o=document.createElement('option'); o.value=c.id; o.textContent=c.name; sel.appendChild(o);
     }
   });
 }
 
 function exportCSV() {
-  if (!allLogs.length) { toast('No data to export', 'err'); return; }
-  const rows = [['Timestamp','Campaign','TextData','PhotoURL']];
-  allLogs.forEach(l => {
-    const td = typeof l.textData === 'object' ? JSON.stringify(l.textData) : '';
-    rows.push([l.timestamp, l.campaignName, td, l.photoURL || '']);
-  });
-  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = 'twibbon_logs.csv';
-  a.click();
+  if (!allLogs.length) { toast('No data','err'); return; }
+  const rows=[['Timestamp','Campaign','TextData','PhotoURL']];
+  allLogs.forEach(l=>rows.push([l.timestamp,l.campaignName,JSON.stringify(l.textData||{}),l.photoURL||'']));
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='twibbon_logs.csv'; a.click();
 }
 
 // ================================================================
 // UTILS
 // ================================================================
-function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function fmtDate(s) { if (!s) return '—'; try { return new Date(s).toLocaleDateString(); } catch { return s; } }
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fd(s){if(!s)return'—';try{return new Date(s).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}catch{return s}}
 
 let _tt;
-function toast(msg, type='') {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.className = 'toast show' + (type ? ' '+type : '');
-  clearTimeout(_tt); _tt = setTimeout(() => el.className='toast', 3000);
+function toast(msg,type=''){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast show'+(type?' '+type:'');
+  clearTimeout(_tt); _tt=setTimeout(()=>el.className='toast',3200);
 }
 </script>
 </body>
