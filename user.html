@@ -2,670 +2,642 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Campaign Maker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Twibbon Frame Maker</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f3ef;--surface:#fff;--border:#e0ddd6;--border2:#c9c6be;
+  --text:#18170f;--muted:#6b695f;--accent:#2563eb;--accent-bg:#eff6ff;
+  --green:#16a34a;--green-bg:#f0fdf4;--red:#dc2626;
+  --radius:10px;--font:'Segoe UI',system-ui,sans-serif
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+/* hero topbar */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:54px;display:flex;align-items:center;gap:10px}
+.topbar-title{font-size:16px;font-weight:700}
+.topbar-campaign{font-size:13px;color:var(--muted);padding-left:10px;border-left:1px solid var(--border);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-  :root {
-    --bg: #f5f4f0;
-    --surface: #ffffff;
-    --border: #e2e0d8;
-    --border-dark: #c8c6bc;
-    --text: #1a1916;
-    --text-muted: #6b6960;
-    --accent: #1d4ed8;
-    --accent-light: #eff6ff;
-    --success: #16a34a;
-    --danger: #dc2626;
-    --radius: 8px;
-    --font: 'Segoe UI', system-ui, sans-serif;
-  }
+/* main layout */
+.app{display:grid;grid-template-columns:340px 1fr;min-height:calc(100vh - 54px);max-width:1280px;margin:0 auto;padding:20px;gap:20px;align-items:start}
+@media(max-width:720px){.app{grid-template-columns:1fr;padding:12px}}
 
-  body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
+/* left panel */
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:14px}
+.panel-hd{padding:13px 16px;border-bottom:1px solid var(--border);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
+.panel-bd{padding:16px}
 
-  /* ── TOPBAR ── */
-  .topbar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    height: 56px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .topbar-logo { font-size: 15px; font-weight: 600; }
-  .campaign-name {
-    font-size: 14px;
-    color: var(--text-muted);
-    padding-left: 12px;
-    border-left: 1px solid var(--border);
-  }
+/* step badge */
+.step-num{display:inline-flex;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:700;align-items:center;justify-content:center;flex-shrink:0}
+.step-num.done{background:var(--green)}
 
-  /* ── LAYOUT ── */
-  .layout {
-    display: grid;
-    grid-template-columns: 340px 1fr;
-    min-height: calc(100vh - 56px);
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 24px;
-    gap: 24px;
-    align-items: start;
-  }
+/* progress bar */
+.progress{height:4px;background:var(--border);border-radius:2px;margin-bottom:20px;overflow:hidden}
+.progress-bar{height:100%;background:var(--accent);border-radius:2px;transition:width .4s}
 
-  /* ── PANEL ── */
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .panel-header {
-    padding: 14px 18px;
-    border-bottom: 1px solid var(--border);
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-  .panel-body { padding: 18px; }
+/* upload zone */
+.drop-zone{border:2px dashed var(--border2);border-radius:var(--radius);padding:24px 16px;text-align:center;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.drop-zone:hover,.drop-zone.drag{border-color:var(--accent);background:var(--accent-bg)}
+.drop-zone.done{border-color:var(--green);background:var(--green-bg)}
+.drop-icon{font-size:26px;margin-bottom:6px}
+.drop-text{font-size:13px;color:var(--muted)}
+.drop-preview{width:80px;height:80px;object-fit:cover;border-radius:8px;margin-bottom:8px;border:1px solid var(--border)}
 
-  /* ── STEPS ── */
-  .step-indicator {
-    display: flex;
-    gap: 0;
-    margin-bottom: 20px;
-  }
-  .step-dot {
-    flex: 1;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    margin: 0 2px;
-    transition: background 0.3s;
-  }
-  .step-dot.done { background: var(--success); }
-  .step-dot.active { background: var(--accent); }
+/* controls */
+.ctrl-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.ctrl-label{font-size:12px;color:var(--muted);width:52px;flex-shrink:0}
+input[type=range]{flex:1;accent-color:var(--accent)}
+.ctrl-val{font-size:12px;font-weight:600;min-width:36px;text-align:right}
 
-  /* ── FORM ── */
-  .form-row { margin-bottom: 16px; }
-  label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
-  input[type=text] {
-    width: 100%;
-    height: 40px;
-    border: 1px solid var(--border-dark);
-    border-radius: var(--radius);
-    padding: 0 12px;
-    font-size: 14px;
-    font-family: var(--font);
-    background: var(--surface);
-    color: var(--text);
-    transition: border-color 0.15s;
-  }
-  input[type=text]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(29,78,216,0.1); }
+/* text inputs */
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+input[type=text],select{width:100%;height:40px;border:1px solid var(--border2);border-radius:var(--radius);padding:0 12px;font-size:14px;font-family:var(--font);background:var(--surface);color:var(--text);transition:border-color .15s}
+input[type=text]:focus,select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
 
-  /* ── UPLOAD ZONE ── */
-  .upload-zone {
-    border: 2px dashed var(--border-dark);
-    border-radius: var(--radius);
-    padding: 28px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-  }
-  .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: var(--accent-light); }
-  .upload-zone.done { border-color: var(--success); background: #f0fdf4; }
-  .upload-icon { font-size: 28px; margin-bottom: 8px; }
-  .upload-text { font-size: 13px; color: var(--text-muted); }
-  .upload-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-  .upload-preview {
-    width: 100%;
-    max-height: 140px;
-    object-fit: cover;
-    border-radius: 6px;
-    margin-bottom: 8px;
-  }
+/* download btn */
+.btn-dl{display:flex;width:100%;height:48px;align-items:center;justify-content:center;gap:8px;background:var(--green);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:700;font-family:var(--font);cursor:pointer;transition:all .15s;margin-top:4px}
+.btn-dl:hover{background:#15803d;transform:translateY(-1px)}
+.btn-dl:active{transform:none}
+.btn-dl:disabled{background:var(--muted);cursor:not-allowed;transform:none}
 
-  /* ── CANVAS AREA ── */
-  .canvas-panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-  }
-  .canvas-panel-header {
-    padding: 14px 18px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .canvas-panel-title { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
-  .canvas-wrap {
-    background: #e8e8e8;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    min-height: 400px;
-  }
-  #outputCanvas {
-    max-width: 100%;
-    border-radius: 4px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-  }
+/* canvas area */
+.canvas-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.canvas-hd{padding:13px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.canvas-hd-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.canvas-hint{font-size:12px;color:var(--muted)}
+.canvas-wrap{background:#9ca3af;display:flex;align-items:center;justify-content:center;padding:16px;min-height:420px;overflow:hidden;position:relative}
+#outputCanvas{border-radius:4px;touch-action:none;max-width:100%;cursor:grab;display:block}
+#outputCanvas:active{cursor:grabbing}
 
-  /* ── BUTTONS ── */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 0 16px;
-    height: 40px;
-    border-radius: var(--radius);
-    font-size: 14px;
-    font-weight: 600;
-    font-family: var(--font);
-    cursor: pointer;
-    border: 1px solid transparent;
-    transition: all 0.15s;
-    width: 100%;
-    justify-content: center;
-  }
-  .btn-download {
-    background: var(--success);
-    color: #fff;
-    margin-top: 16px;
-    font-size: 15px;
-    height: 48px;
-  }
-  .btn-download:hover { background: #15803d; transform: translateY(-1px); }
-  .btn-download:active { transform: none; }
-  .btn-download:disabled { background: var(--text-muted); cursor: not-allowed; transform: none; }
+/* loading + error */
+.loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 54px);gap:14px}
+.spin-lg{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .75s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.err-page{max-width:400px;margin:80px auto;text-align:center;padding:20px}
+.err-icon{font-size:40px;margin-bottom:12px}
 
-  /* ── LOADING / ERROR STATES ── */
-  .loading-state {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: calc(100vh - 56px);
-    gap: 16px;
-  }
-  .spinner-lg {
-    width: 40px;
-    height: 40px;
-    border: 3px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .error-state {
-    max-width: 420px;
-    margin: 80px auto;
-    text-align: center;
-    padding: 24px;
-  }
-  .error-icon { font-size: 40px; margin-bottom: 12px; }
-  .error-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
-  .error-msg { font-size: 14px; color: var(--text-muted); }
-
-  /* ── TOAST ── */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--text);
-    color: #fff;
-    padding: 10px 16px;
-    border-radius: var(--radius);
-    font-size: 13px;
-    z-index: 9999;
-    opacity: 0;
-    transform: translateY(8px);
-    transition: all 0.25s;
-    pointer-events: none;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
-  .toast.success { background: var(--success); }
-  .toast.error { background: var(--danger); }
-
-  /* ── MISC ── */
-  .text-muted { font-size: 12px; color: var(--text-muted); }
-  .divider { border: none; border-top: 1px solid var(--border); margin: 16px 0; }
-
-  @media (max-width: 700px) {
-    .layout { grid-template-columns: 1fr; padding: 12px; }
-  }
+/* toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--text);color:#fff;padding:9px 15px;border-radius:var(--radius);font-size:13px;z-index:9999;opacity:0;transform:translateY(6px);transition:all .22s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.ok{background:var(--green)}
+.toast.err{background:var(--red)}
 </style>
 </head>
 <body>
 
-<!-- LOADING STATE -->
-<div id="loadingState" class="loading-state">
-  <div class="spinner-lg"></div>
-  <div style="font-size: 14px; color: var(--text-muted);">Loading template…</div>
+<!-- LOADING -->
+<div id="loadingState" class="loading">
+  <div class="spin-lg"></div>
+  <div style="font-size:14px;color:var(--muted)">Loading campaign…</div>
 </div>
 
-<!-- ERROR STATE -->
-<div id="errorState" style="display:none;">
-  <div class="error-state">
-    <div class="error-icon">❌</div>
-    <div class="error-title">Template not found</div>
-    <div class="error-msg" id="errorMsg">Please check the link and try again. Make sure you have the correct template URL.</div>
+<!-- ERROR -->
+<div id="errorState" style="display:none">
+  <div class="err-page">
+    <div class="err-icon">🔗</div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:8px">Campaign not found</div>
+    <div style="font-size:14px;color:var(--muted)" id="errMsg">Please check the link and try again.</div>
   </div>
 </div>
 
-<!-- MAIN APP -->
-<div id="appState" style="display:none;">
-
-  <!-- TOPBAR -->
+<!-- APP -->
+<div id="appState" style="display:none">
   <div class="topbar">
-    <span class="topbar-logo">Campaign Maker</span>
-    <span class="campaign-name" id="campaignName">—</span>
+    <span class="topbar-title">Twibbon</span>
+    <span class="topbar-campaign" id="topCampaign">—</span>
   </div>
 
-  <!-- LAYOUT -->
-  <div class="layout">
-
-    <!-- LEFT: INPUTS -->
+  <div class="app">
+    <!-- LEFT: CONTROLS -->
     <div>
+      <div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
 
-      <!-- Step Indicator -->
-      <div class="step-indicator">
-        <div class="step-dot active" id="step1dot"></div>
-        <div class="step-dot" id="step2dot"></div>
-        <div class="step-dot" id="step3dot"></div>
-      </div>
-
-      <!-- Step 1: Photo Upload -->
-      <div class="panel" style="margin-bottom: 16px;">
-        <div class="panel-header">Step 1 — Upload Your Photo</div>
-        <div class="panel-body">
-          <div id="uploadZone" class="upload-zone" onclick="document.getElementById('photoInput').click()" ondragover="handleDrag(event,true)" ondragleave="handleDrag(event,false)" ondrop="handleDrop(event)">
-            <div id="uploadInner">
-              <div class="upload-icon">📷</div>
-              <div class="upload-text">Click to upload your photo</div>
-              <div class="upload-hint">JPG or PNG · Will be cropped to fit</div>
+      <!-- Step 1: Upload photo -->
+      <div class="panel">
+        <div class="panel-hd">
+          <span style="display:flex;align-items:center;gap:8px"><span class="step-num" id="s1num">1</span> Upload your photo</span>
+        </div>
+        <div class="panel-bd">
+          <div id="dropZone" class="drop-zone" onclick="document.getElementById('photoInput').click()" ondragover="onDrag(event,true)" ondragleave="onDrag(event,false)" ondrop="onDrop(event)">
+            <div id="dropInner">
+              <div class="drop-icon">📷</div>
+              <div class="drop-text">Tap or click to upload your photo</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:4px">JPG or PNG</div>
             </div>
           </div>
-          <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhotoUpload(event)">
+          <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(event)">
         </div>
       </div>
 
-      <!-- Step 2: Text Fields (injected dynamically) -->
-      <div class="panel" id="textPanel" style="margin-bottom: 16px;">
-        <div class="panel-header">Step 2 — Fill In Your Details</div>
-        <div class="panel-body" id="textFieldsContainer">
-          <div class="text-muted">Loading fields…</div>
+      <!-- Step 2: Adjust photo -->
+      <div class="panel" id="adjustPanel">
+        <div class="panel-hd">
+          <span style="display:flex;align-items:center;gap:8px"><span class="step-num" id="s2num">2</span> Adjust photo</span>
+          <span style="font-size:11px;color:var(--muted)">Drag on canvas · Use sliders</span>
+        </div>
+        <div class="panel-bd">
+          <div class="ctrl-row">
+            <span class="ctrl-label">Zoom</span>
+            <input type="range" id="scaleSlider" min="50" max="300" value="100" step="1" oninput="onSlider()">
+            <span class="ctrl-val" id="scaleVal">100%</span>
+          </div>
+          <div class="ctrl-row">
+            <span class="ctrl-label">Rotate</span>
+            <input type="range" id="rotSlider" min="-180" max="180" value="0" step="1" oninput="onSlider()">
+            <span class="ctrl-val" id="rotVal">0°</span>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:6px">
+            <button style="flex:1;height:34px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)" onclick="resetPhoto()">Reset</button>
+            <button style="flex:1;height:34px;border-radius:var(--radius);border:1px solid var(--border2);background:var(--surface);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font)" onclick="fitPhoto()">Fit to frame</button>
+          </div>
         </div>
       </div>
 
-      <!-- Step 3: Download -->
+      <!-- Step 3: Text fields (injected dynamically) -->
+      <div class="panel" id="textPanel">
+        <div class="panel-hd">
+          <span style="display:flex;align-items:center;gap:8px"><span class="step-num" id="s3num">3</span> Fill in details</span>
+        </div>
+        <div class="panel-bd" id="textFieldsEl">
+          <div style="font-size:13px;color:var(--muted)">Loading…</div>
+        </div>
+      </div>
+
+      <!-- Step 4: Download -->
       <div class="panel">
-        <div class="panel-header">Step 3 — Download</div>
-        <div class="panel-body">
-          <div class="text-muted" style="margin-bottom: 8px;">Your campaign image will be downloaded as a JPEG.</div>
-          <div class="text-muted" style="margin-bottom: 4px;">Filename: <strong id="filenamePreview">—</strong></div>
-          <button class="btn btn-download" id="downloadBtn" onclick="downloadImage()" disabled>
-            ⬇ Download JPEG
-          </button>
+        <div class="panel-hd">
+          <span style="display:flex;align-items:center;gap:8px"><span class="step-num" id="s4num">4</span> Download</span>
+        </div>
+        <div class="panel-bd">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:8px">Filename: <span id="filenameEl" style="font-weight:600">—</span></div>
+          <button class="btn-dl" id="dlBtn" onclick="download()" disabled>⬇ Download JPEG</button>
         </div>
       </div>
-
     </div>
 
-    <!-- RIGHT: CANVAS PREVIEW -->
+    <!-- RIGHT: CANVAS -->
     <div class="canvas-panel">
-      <div class="canvas-panel-header">
-        <span class="canvas-panel-title">Preview</span>
-        <span class="text-muted">Updates as you fill in details</span>
+      <div class="canvas-hd">
+        <span class="canvas-hd-title">Live Preview</span>
+        <span class="canvas-hint" id="canvasHint">Upload a photo to begin</span>
       </div>
-      <div class="canvas-wrap">
+      <div class="canvas-wrap" id="canvasWrap">
         <canvas id="outputCanvas"></canvas>
       </div>
     </div>
+  </div>
+</div>
 
-  </div><!-- /layout -->
-</div><!-- /appState -->
-
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================================
-// CONFIG — paste your Apps Script Web App URL here
-// ============================================================
-const API_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AWDtjMVrnqBVHqMLoycGbVCdXE-EvJ_YUY552NbX6arg--vePRfKDZphgeRs0ly3CANA-SMm7XGi92lNZvDpLyHlmvET5wtL1l1mjDAsJ2xLBIxjD-MSiwjbyPN-FOH8AP_Dwt1zsrotC-JtSeHQNLRrXCDEtJXx2ppnyPvjJB0JIw9NkP_TYqM4ObcX02ubJJawhVSPHRv4W4k1mI0ahJ7-d9cBTdSxx_WgvU0aEtzaMXm2PnZNeT1Oolsi_gS7yEXA6x1q3mqTeyGuSGCbeRRXZ8gal7U9lw&lib=MqnWsiAgObABnsdkZB3X5svRbA25Fyx5W';
+// ================================================================
+// CONFIG
+// ================================================================
+const API = 'https://script.google.com/macros/s/AKfycbxehno2PoWxmgUZOWnxdNUVYZCkhkk3Q6_sJQsAGlSqpI79GJ0CTrwuEnvuoINmCjdu/exec';
 
-// ============================================================
+// ================================================================
 // STATE
-// ============================================================
-let template = null;
-let userPhoto = null;      // HTMLImageElement
-let textValues = {};       // { label: value }
+// ================================================================
+let campaign   = null;
+let frameImg   = null;
+let userPhoto  = null;
+let textVals   = {};     // { fieldIndex: value }
 
-// ============================================================
+// Photo transform state (in canvas px relative to canvas centre)
+let photo = { x: 0, y: 0, scale: 1, rot: 0 };
+
+// Touch / mouse interaction
+let ptr = { active: false, mode: null, startX: 0, startY: 0, lastX: 0, lastY: 0, startScale: 1, startRot: 0, t0: null, t1: null };
+
+const RENDER_SIZE = 600; // canvas display size in px (output full-res uses frameImg size)
+
+// ================================================================
 // INIT
-// ============================================================
+// ================================================================
 window.onload = () => {
-  const params = new URLSearchParams(window.location.search);
-  const id = params.get('template');
-  if (!id) {
-    showError('No template specified. Please use the link provided by your organiser.');
-    return;
-  }
-  loadTemplate(id);
+  const id = new URLSearchParams(location.search).get('campaign');
+  if (!id) { showErr('No campaign ID in URL. Please use the link provided by your organiser.'); return; }
+  loadCampaign(id);
 };
 
-// ============================================================
-// LOAD TEMPLATE
-// ============================================================
-async function loadTemplate(id) {
+async function loadCampaign(id) {
   try {
-    const res = await fetch(`${API_URL}?action=getTemplate&id=${encodeURIComponent(id)}`);
+    const res  = await fetch(`${API}?action=getCampaign&id=${encodeURIComponent(id)}`);
     const data = await res.json();
-
-    if (data.error || !data.template) {
-      showError('Template not found. Please contact the campaign organiser.');
-      return;
-    }
-
-    template = data.template;
+    if (data.error || !data.campaign) { showErr('Campaign not found. Please check the link.'); return; }
+    campaign = data.campaign;
     initApp();
-
-  } catch (e) {
-    showError('Could not load template. Check your internet connection and try again.');
-  }
+  } catch (e) { showErr('Network error. Check your connection and try again.'); }
 }
 
 function initApp() {
   document.getElementById('loadingState').style.display = 'none';
-  document.getElementById('appState').style.display = 'block';
-  document.getElementById('campaignName').textContent = template.name;
-  document.title = template.name + ' — Campaign Maker';
+  document.getElementById('appState').style.display     = 'block';
+  document.getElementById('topCampaign').textContent    = campaign.name;
+  document.title = campaign.name + ' — Twibbon';
 
   buildTextFields();
-  updateFilenamePreview();
+  updateFilename();
 
-  // Load frame image and draw initial canvas
-  const frameImg = new Image();
-  frameImg.crossOrigin = 'anonymous';
-  frameImg.onload = () => {
-    template._frameImg = frameImg;
-    renderCanvas();
-  };
-  frameImg.onerror = () => {
-    toast('Could not load frame image. Check CORS settings on Drive.', 'error');
-  };
-  frameImg.src = template.imageURL;
+  // Load frame
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload  = () => { frameImg = img; drawCanvas(); };
+  img.onerror = () => toast('Frame image failed to load. Check Drive sharing settings.', 'err');
+  img.src = campaign.frameURL;
 }
 
-// ============================================================
+// ================================================================
 // TEXT FIELDS
-// ============================================================
+// ================================================================
 function buildTextFields() {
-  const container = document.getElementById('textFieldsContainer');
-  const fields = template.textConfig || [];
+  const el     = document.getElementById('textFieldsEl');
+  const fields = campaign.textFields || [];
+  if (!fields.length) { el.innerHTML = '<div style="font-size:13px;color:var(--muted)">No text fields for this campaign.</div>'; return; }
 
-  if (!fields.length) {
-    container.innerHTML = '<div class="text-muted">No text fields for this template.</div>';
-    return;
-  }
-
-  container.innerHTML = fields.map((f, i) => `
-    <div class="form-row">
+  el.innerHTML = fields.map((f, i) => {
+    textVals[i] = '';
+    if (f.type === 'dropdown' && f.options && f.options.length) {
+      textVals[i] = f.options[0];
+      return `<div class="fg">
+        <label>${esc(f.label)}</label>
+        <select id="tf_${i}" onchange="onText(${i}, this.value)">
+          <option value="">— Select —</option>
+          ${f.options.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('')}
+        </select>
+      </div>`;
+    }
+    return `<div class="fg">
       <label>${esc(f.label)}</label>
-      <input type="text" id="field_${i}" placeholder="Enter ${esc(f.label)}" oninput="onFieldChange(${i}, this.value)">
-    </div>
-  `).join('');
-
-  // Init textValues
-  fields.forEach((f, i) => { textValues[i] = ''; });
+      <input type="text" id="tf_${i}" placeholder="Enter ${esc(f.label)}" oninput="onText(${i}, this.value)">
+    </div>`;
+  }).join('');
 }
 
-function onFieldChange(i, value) {
-  textValues[i] = value;
-  updateFilenamePreview();
-  renderCanvas();
-  updateStepIndicator();
+function onText(i, val) { textVals[i] = val; updateFilename(); drawCanvas(); updateProgress(); }
+
+function updateFilename() {
+  const first  = (textVals[0] || '').trim().replace(/[\/\\:*?"<>|]/g,'') || 'MyPhoto';
+  const camp   = (campaign ? campaign.name : 'Campaign').replace(/[\/\\:*?"<>|]/g,'');
+  document.getElementById('filenameEl').textContent = `${first} – ${camp}.jpeg`;
 }
 
-function updateFilenamePreview() {
-  if (!template) return;
-  const firstField = textValues[0] || 'Name';
-  const clean = firstField.trim().replace(/[^a-zA-Z0-9\s\u0D00-\u0D7F]/g, '') || 'Name';
-  const filename = `${clean} – ${template.name}.jpeg`;
-  document.getElementById('filenamePreview').textContent = filename;
-}
-
-function updateStepIndicator() {
-  const hasPhoto = !!userPhoto;
-  const hasText = Object.values(textValues).some(v => v.trim());
-
-  document.getElementById('step1dot').className = 'step-dot ' + (hasPhoto ? 'done' : 'active');
-  document.getElementById('step2dot').className = 'step-dot ' + (hasText ? 'done' : hasPhoto ? 'active' : '');
-  document.getElementById('step3dot').className = 'step-dot ' + (hasPhoto && hasText ? 'active' : '');
-
-  document.getElementById('downloadBtn').disabled = !hasPhoto;
-}
-
-// ============================================================
+// ================================================================
 // PHOTO UPLOAD
-// ============================================================
-function handleDrag(e, active) {
-  e.preventDefault();
-  document.getElementById('uploadZone').classList.toggle('drag', active);
-}
-
-function handleDrop(e) {
-  e.preventDefault();
-  handleDrag(e, false);
-  const file = e.dataTransfer.files[0];
-  if (file && file.type.startsWith('image/')) processPhoto(file);
-}
-
-function handlePhotoUpload(e) {
-  const file = e.target.files[0];
-  if (file) processPhoto(file);
-}
+// ================================================================
+function onDrag(e, a) { e.preventDefault(); document.getElementById('dropZone').classList.toggle('drag', a); }
+function onDrop(e)    { e.preventDefault(); onDrag(e, false); const f = e.dataTransfer.files[0]; if (f) processPhoto(f); }
+function handlePhoto(e) { const f = e.target.files[0]; if (f) processPhoto(f); }
 
 function processPhoto(file) {
   const reader = new FileReader();
-  reader.onload = (e) => {
+  reader.onload = ev => {
     const img = new Image();
     img.onload = () => {
       userPhoto = img;
-
-      // Update upload zone UI
-      const zone = document.getElementById('uploadZone');
-      zone.classList.add('done');
-      zone.innerHTML = `<img class="upload-preview" src="${e.target.result}"><div class="upload-text" style="color:var(--success);">✓ Photo ready</div><div class="upload-hint">Click to change</div>`;
-
-      renderCanvas();
-      updateStepIndicator();
-      toast('Photo loaded!', 'success');
+      photo = { x: 0, y: 0, scale: 1, rot: 0 };
+      fitPhoto();
+      document.getElementById('dropZone').classList.add('done');
+      document.getElementById('dropInner').innerHTML = `<img class="drop-preview" src="${ev.target.result}"><div style="font-size:13px;color:var(--green);font-weight:600">✓ Photo ready</div><div class="drop-text">Tap to change</div>`;
+      document.getElementById('s1num').classList.add('done');
+      document.getElementById('canvasHint').textContent = 'Drag to move · Pinch/scroll to zoom';
+      document.getElementById('dlBtn').disabled = false;
+      updateProgress();
+      drawCanvas();
+      toast('Photo loaded!', 'ok');
     };
-    img.src = e.target.result;
+    img.src = ev.target.result;
   };
   reader.readAsDataURL(file);
 }
 
-// ============================================================
-// CANVAS RENDER
-// ============================================================
-function renderCanvas() {
-  if (!template || !template._frameImg) return;
+function fitPhoto() {
+  if (!userPhoto || !frameImg) return;
+  const sc = RENDER_SIZE / frameImg.width;
+  const fw = frameImg.width  * sc;
+  const fh = frameImg.height * sc;
+  const ratio = Math.max(fw / userPhoto.width, fh / userPhoto.height);
+  photo.scale = ratio;
+  photo.x = 0; photo.y = 0; photo.rot = 0;
+  document.getElementById('scaleSlider').value = Math.round(ratio * 100);
+  document.getElementById('rotSlider').value = 0;
+  document.getElementById('scaleVal').textContent = Math.round(ratio * 100) + '%';
+  document.getElementById('rotVal').textContent = '0°';
+  drawCanvas();
+}
 
-  const frame   = template._frameImg;
-  const canvas  = document.getElementById('outputCanvas');
-  const ctx     = canvas.getContext('2d');
+function resetPhoto() {
+  photo = { x: 0, y: 0, scale: 1, rot: 0 };
+  document.getElementById('scaleSlider').value = 100;
+  document.getElementById('rotSlider').value   = 0;
+  document.getElementById('scaleVal').textContent = '100%';
+  document.getElementById('rotVal').textContent   = '0°';
+  drawCanvas();
+}
 
-  canvas.width  = frame.width;
-  canvas.height = frame.height;
+function onSlider() {
+  photo.scale = parseInt(document.getElementById('scaleSlider').value) / 100;
+  photo.rot   = parseInt(document.getElementById('rotSlider').value);
+  document.getElementById('scaleVal').textContent = Math.round(photo.scale * 100) + '%';
+  document.getElementById('rotVal').textContent   = Math.round(photo.rot) + '°';
+  drawCanvas();
+}
 
-  // 1. Draw user photo inside placeholder zone (behind frame)
-  if (userPhoto) {
-    const zx = parseInt(template.imageX);
-    const zy = parseInt(template.imageY);
-    const zw = parseInt(template.imageW);
-    const zh = parseInt(template.imageH);
-    drawCroppedImage(ctx, userPhoto, zx, zy, zw, zh);
-  } else {
-    // Draw placeholder
-    const zx = parseInt(template.imageX);
-    const zy = parseInt(template.imageY);
-    const zw = parseInt(template.imageW);
-    const zh = parseInt(template.imageH);
-    ctx.fillStyle = '#d1d5db';
-    ctx.fillRect(zx, zy, zw, zh);
-    ctx.fillStyle = '#9ca3af';
-    ctx.font = `bold ${Math.max(14, Math.round(zw * 0.05))}px Arial`;
-    ctx.textAlign = 'center';
-    ctx.fillText('Your photo here', zx + zw / 2, zy + zh / 2);
+// ================================================================
+// CANVAS DRAW
+// ================================================================
+function drawCanvas() {
+  const canvas = document.getElementById('outputCanvas');
+  const ctx    = canvas.getContext('2d');
+
+  if (!frameImg) {
+    canvas.width = RENDER_SIZE; canvas.height = RENDER_SIZE;
+    ctx.fillStyle = '#6b7280';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#fff'; ctx.font = '16px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('Upload a photo to get started', canvas.width/2, canvas.height/2);
+    return;
   }
 
-  // 2. Draw frame on top
-  ctx.drawImage(frame, 0, 0, canvas.width, canvas.height);
+  const sc = RENDER_SIZE / frameImg.width;
+  canvas.width  = Math.round(frameImg.width  * sc);
+  canvas.height = Math.round(frameImg.height * sc);
+  const cw = canvas.width, ch = canvas.height;
 
-  // 3. Draw text fields
-  const fields = template.textConfig || [];
-  fields.forEach((f, i) => {
-    const val = (textValues[i] || '').trim();
-    if (!val) return;
+  // White background
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, cw, ch);
 
+  // Draw user photo (behind frame)
+  if (userPhoto) {
     ctx.save();
-    ctx.font = `${f.size}px ${f.font}`;
-    ctx.fillStyle = f.color;
+    ctx.translate(cw/2 + photo.x, ch/2 + photo.y);
+    ctx.rotate(photo.rot * Math.PI / 180);
+    const pw = userPhoto.width  * photo.scale;
+    const ph = userPhoto.height * photo.scale;
+    ctx.drawImage(userPhoto, -pw/2, -ph/2, pw, ph);
+    ctx.restore();
+  }
+
+  // Draw frame on top
+  ctx.drawImage(frameImg, 0, 0, cw, ch);
+
+  // Draw text fields
+  const fields = campaign.textFields || [];
+  fields.forEach((f, i) => {
+    const val = (textVals[i] || '').trim();
+    if (!val) return;
+    ctx.save();
+    const fs  = Math.max(8, (f.size || 28) * sc);
+    ctx.font      = `${fs}px ${f.font || 'Arial'}`;
+    ctx.fillStyle = f.color || '#000';
     ctx.textAlign = f.align || 'left';
     ctx.textBaseline = 'alphabetic';
-
-    // Calculate x for alignment
-    let tx = f.x;
-    if (f.align === 'center') tx = f.x + (f.maxWidth / 2);
-    if (f.align === 'right')  tx = f.x + f.maxWidth;
-
-    // Word-wrap text within maxWidth
-    const lines = wrapText(ctx, val, f.maxWidth);
-    const lineH = f.size * 1.25;
-    lines.forEach((line, li) => {
-      ctx.fillText(line, tx, f.y + li * lineH, f.maxWidth);
-    });
-
+    const fx  = (f.x || 0) * sc;
+    const fy  = (f.y || 0) * sc;
+    const fmw = (f.maxWidth || 300) * sc;
+    const tx  = f.align === 'center' ? fx + fmw/2 : f.align === 'right' ? fx + fmw : fx;
+    const lines = wrapText(ctx, val, fmw);
+    const lh    = fs * 1.25;
+    lines.forEach((line, li) => ctx.fillText(line, tx, fy + li*lh, fmw));
     ctx.restore();
   });
 }
 
-// Draw user image cropped and scaled to fill the zone (cover mode)
-function drawCroppedImage(ctx, img, x, y, w, h) {
-  const scale = Math.max(w / img.width, h / img.height);
-  const sw    = w / scale;
-  const sh    = h / scale;
-  const sx    = (img.width - sw) / 2;
-  const sy    = (img.height - sh) / 2;
-
-  ctx.save();
-  ctx.beginPath();
-  ctx.rect(x, y, w, h);
-  ctx.clip();
-  ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
-  ctx.restore();
-}
-
-// Simple word-wrap
-function wrapText(ctx, text, maxWidth) {
+function wrapText(ctx, text, maxW) {
   const words = text.split(' ');
-  const lines = [];
-  let current = '';
-
-  for (const word of words) {
-    const test = current ? current + ' ' + word : word;
-    if (ctx.measureText(test).width > maxWidth && current) {
-      lines.push(current);
-      current = word;
-    } else {
-      current = test;
-    }
+  const lines = []; let cur = '';
+  for (const w of words) {
+    const test = cur ? cur + ' ' + w : w;
+    if (ctx.measureText(test).width > maxW && cur) { lines.push(cur); cur = w; }
+    else cur = test;
   }
-  if (current) lines.push(current);
+  if (cur) lines.push(cur);
   return lines;
 }
 
-// ============================================================
+// ================================================================
+// POINTER INTERACTION — drag + pinch + scroll
+// ================================================================
+const canvas = document.getElementById('outputCanvas');
+
+// Mouse drag
+canvas.addEventListener('mousedown', e => {
+  ptr.active = true; ptr.mode = 'mouse';
+  ptr.lastX = e.clientX; ptr.lastY = e.clientY;
+});
+window.addEventListener('mousemove', e => {
+  if (!ptr.active || ptr.mode !== 'mouse' || !userPhoto) return;
+  const dx = e.clientX - ptr.lastX;
+  const dy = e.clientY - ptr.lastY;
+  ptr.lastX = e.clientX; ptr.lastY = e.clientY;
+  photo.x += dx; photo.y += dy;
+  drawCanvas();
+});
+window.addEventListener('mouseup', () => { ptr.active = false; });
+
+// Scroll to zoom
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = -e.deltaY / 500;
+  photo.scale = Math.max(0.05, photo.scale + delta);
+  document.getElementById('scaleSlider').value = Math.min(300, Math.round(photo.scale * 100));
+  document.getElementById('scaleVal').textContent = Math.round(photo.scale * 100) + '%';
+  drawCanvas();
+}, { passive: false });
+
+// Touch: single finger = drag, two fingers = pinch+rotate
+canvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  if (e.touches.length === 1) {
+    ptr.active = true; ptr.mode = 'touch1';
+    ptr.lastX = e.touches[0].clientX; ptr.lastY = e.touches[0].clientY;
+  } else if (e.touches.length === 2) {
+    ptr.active = true; ptr.mode = 'touch2';
+    ptr.t0 = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    ptr.t1 = { x: e.touches[1].clientX, y: e.touches[1].clientY };
+    ptr.startScale = photo.scale;
+    ptr.startRot   = photo.rot;
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (!ptr.active || !userPhoto) return;
+
+  if (ptr.mode === 'touch1' && e.touches.length === 1) {
+    const dx = e.touches[0].clientX - ptr.lastX;
+    const dy = e.touches[0].clientY - ptr.lastY;
+    ptr.lastX = e.touches[0].clientX; ptr.lastY = e.touches[0].clientY;
+    photo.x += dx; photo.y += dy;
+    drawCanvas();
+  } else if (ptr.mode === 'touch2' && e.touches.length === 2) {
+    const c0 = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    const c1 = { x: e.touches[1].clientX, y: e.touches[1].clientY };
+
+    const startDist = Math.hypot(ptr.t1.x - ptr.t0.x, ptr.t1.y - ptr.t0.y);
+    const currDist  = Math.hypot(c1.x - c0.x, c1.y - c0.y);
+    photo.scale = Math.max(0.05, ptr.startScale * (currDist / startDist));
+
+    const startAngle = Math.atan2(ptr.t1.y - ptr.t0.y, ptr.t1.x - ptr.t0.x);
+    const currAngle  = Math.atan2(c1.y - c0.y, c1.x - c0.x);
+    photo.rot = ptr.startRot + (currAngle - startAngle) * (180 / Math.PI);
+
+    document.getElementById('scaleSlider').value = Math.min(300, Math.round(photo.scale * 100));
+    document.getElementById('rotSlider').value   = Math.round(photo.rot);
+    document.getElementById('scaleVal').textContent = Math.min(300, Math.round(photo.scale * 100)) + '%';
+    document.getElementById('rotVal').textContent   = Math.round(photo.rot) + '°';
+    drawCanvas();
+  }
+}, { passive: false });
+
+canvas.addEventListener('touchend', e => { if (e.touches.length === 0) ptr.active = false; }, { passive: false });
+
+// ================================================================
+// PROGRESS
+// ================================================================
+function updateProgress() {
+  let steps = 0;
+  if (userPhoto) steps++;
+  const hasText = Object.values(textVals).some(v => String(v).trim());
+  if (hasText) steps++;
+  const total = 2;
+  document.getElementById('progressBar').style.width = Math.round((steps/total)*75) + '%';
+  if (userPhoto) document.getElementById('s2num').classList.add('done');
+  if (hasText)   document.getElementById('s3num').classList.add('done');
+}
+
+// ================================================================
 // DOWNLOAD
-// ============================================================
-async function downloadImage() {
-  if (!userPhoto || !template) return;
+// ================================================================
+async function download() {
+  if (!userPhoto || !frameImg) { toast('Upload a photo first', 'err'); return; }
 
-  renderCanvas(); // ensure latest render
+  // Render full-resolution output (actual frame dimensions)
+  const offCanvas = document.createElement('canvas');
+  const ctx       = offCanvas.getContext('2d');
+  const fw = parseInt(campaign.frameW) || frameImg.width;
+  const fh = parseInt(campaign.frameH) || frameImg.height;
+  offCanvas.width = fw; offCanvas.height = fh;
 
-  const canvas = document.getElementById('outputCanvas');
-  const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+  // Scale factor from preview to full-res
+  const previewScale = RENDER_SIZE / frameImg.width;
+  const fullScale    = fw / (RENDER_SIZE / previewScale); // = 1 (frameW = frameImg.width)
 
-  // Build filename: FirstTextField – TemplateName.jpeg
-  const firstVal = (textValues[0] || 'Image').trim().replace(/[\/\\:*?"<>|]/g, '') || 'Image';
-  const tplName  = (template.name || 'Campaign').replace(/[\/\\:*?"<>|]/g, '');
-  const filename = `${firstVal} – ${tplName}.jpeg`;
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, 0, fw, fh);
+
+  // User photo (full res)
+  if (userPhoto) {
+    ctx.save();
+    ctx.translate(fw/2 + photo.x / previewScale, fh/2 + photo.y / previewScale);
+    ctx.rotate(photo.rot * Math.PI / 180);
+    const pw = userPhoto.width  * (photo.scale / previewScale);
+    const ph = userPhoto.height * (photo.scale / previewScale);
+    ctx.drawImage(userPhoto, -pw/2, -ph/2, pw, ph);
+    ctx.restore();
+  }
+
+  // Frame full-res
+  ctx.drawImage(frameImg, 0, 0, fw, fh);
+
+  // Text fields full-res
+  const fields = campaign.textFields || [];
+  fields.forEach((f, i) => {
+    const val = (textVals[i] || '').trim();
+    if (!val) return;
+    ctx.save();
+    const fs = f.size || 28;
+    ctx.font      = `${fs}px ${f.font || 'Arial'}`;
+    ctx.fillStyle = f.color || '#000';
+    ctx.textAlign = f.align || 'left';
+    ctx.textBaseline = 'alphabetic';
+    const fx  = f.x || 0;
+    const fy  = f.y || 0;
+    const fmw = f.maxWidth || 300;
+    const tx  = f.align === 'center' ? fx + fmw/2 : f.align === 'right' ? fx + fmw : fx;
+    const lines = wrapText(ctx, val, fmw);
+    const lh    = fs * 1.25;
+    lines.forEach((line, li) => ctx.fillText(line, tx, fy + li*lh, fmw));
+    ctx.restore();
+  });
 
   // Trigger download
+  const first  = (textVals[0] || 'MyPhoto').trim().replace(/[\/\\:*?"<>|]/g,'') || 'MyPhoto';
+  const cname  = (campaign.name || 'Campaign').replace(/[\/\\:*?"<>|]/g,'');
+  const fname  = `${first} – ${cname}.jpeg`;
+
+  const dataUrl = offCanvas.toDataURL('image/jpeg', 0.95);
   const a = document.createElement('a');
-  a.href = dataUrl;
-  a.download = filename;
-  a.click();
+  a.href = dataUrl; a.download = fname; a.click();
 
-  toast('Download started!', 'success');
+  document.getElementById('s4num').classList.add('done');
+  document.getElementById('progressBar').style.width = '100%';
+  toast('Downloading…', 'ok');
 
-  // Log to Sheets
+  // Log submission (upload thumbnail + log)
+  logSubmission(offCanvas, dataUrl);
+}
+
+async function logSubmission(offCanvas, dataUrl) {
   try {
-    const textData = {};
-    (template.textConfig || []).forEach((f, i) => {
-      textData[f.label] = textValues[i] || '';
-    });
+    // Create thumbnail (200px wide) for Drive storage
+    const thumb = document.createElement('canvas');
+    const ratio = offCanvas.height / offCanvas.width;
+    thumb.width  = 200;
+    thumb.height = Math.round(200 * ratio);
+    thumb.getContext('2d').drawImage(offCanvas, 0, 0, thumb.width, thumb.height);
+    const thumbData = thumb.toDataURL('image/jpeg', 0.7).split(',')[1];
 
-    await fetch(API_URL, {
+    const first  = (textVals[0] || 'photo').trim().replace(/\s+/g,'_').replace(/[^a-z0-9_]/gi,'') || 'photo';
+    const fname  = `${first}_${Date.now()}.jpg`;
+
+    // Upload thumbnail to Drive
+    let photoURL = '';
+    const upRes = await fetch(API, {
+      method: 'POST',
+      body: JSON.stringify({ action:'uploadFile', base64: thumbData, mimeType:'image/jpeg', filename: fname })
+    }).then(r => r.json());
+    if (upRes.url) photoURL = upRes.url;
+
+    // Build textData
+    const textData = {};
+    (campaign.textFields || []).forEach((f, i) => { textData[f.label] = textVals[i] || ''; });
+
+    // Log to Sheets
+    await fetch(API, {
       method: 'POST',
       body: JSON.stringify({
-        action: 'logDownload',
-        templateId: template.id,
-        templateName: template.name,
-        textData
+        action: 'logSubmission',
+        campaignId:   campaign.id,
+        campaignName: campaign.name,
+        textData,
+        photoURL
       })
     });
-  } catch (e) {
-    // Silent fail — don't block user
-    console.warn('Log failed:', e);
+  } catch(e) {
+    console.warn('Log failed (silent):', e);
   }
 }
 
-// ============================================================
-// UI HELPERS
-// ============================================================
-function showError(msg) {
+// ================================================================
+// UTILS
+// ================================================================
+function showErr(msg) {
   document.getElementById('loadingState').style.display = 'none';
-  document.getElementById('errorState').style.display = 'block';
-  document.getElementById('errorMsg').textContent = msg;
+  document.getElementById('errorState').style.display   = 'block';
+  document.getElementById('errMsg').textContent = msg;
 }
 
-function esc(str) {
-  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-let toastTimer;
-function toast(msg, type = '') {
+let _tt;
+function toast(msg, type='') {
   const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'toast show' + (type ? ' ' + type : '');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { el.className = 'toast'; }, 3000);
+  el.textContent = msg; el.className = 'toast show' + (type ? ' '+type:'');
+  clearTimeout(_tt); _tt = setTimeout(() => el.className='toast', 3200);
 }
 </script>
 </body>
